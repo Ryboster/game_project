@@ -82,6 +82,8 @@ Employees can be hired to automate crop production and trade routes.
 
 Money can be used to upgrade farms, ships, tools, employees and expand territory. It can also be used to purchase seeds, essentials such as animal feed, cosmetics, new types of transport (e.g. a horse wagon, a car or a fishing boat.)
 
+The main island has a pirate problem. This will be the main questline. Throughout the questline, player will meet different captains. There will be multiple ways to stop them (e.g. via diplomacy or force). There will also be a possibility to join the pirates.
+
 The goal is to colonize and automate all islands and complete the main questline which rids the world of pirates.
 
 ### Gameplay Elements:
