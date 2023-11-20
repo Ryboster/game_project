@@ -71,6 +71,8 @@ The goal is to rid the map of monsters and take control of all settlements.
 	</tr>
 
 </table>
+
+
 # Option 2: Farming simulator<br>
 
 ### Brief overview
