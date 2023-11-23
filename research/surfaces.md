@@ -66,20 +66,4 @@ while True:
 	screen.blit(text_surface, (200,200))
 ```
 
-### Rectangles
-
-2 core functions:
-* Precise positioning of surfaces
-* Basic Collisions
-
-Rctangles allow for changing the origin point on the surface. <br>
-
-It is a common practice in pygame to use rectangles. The image information is stored in the surface. The position information is stored in the rectangle. You're splitting your image into two different variables which you have to control together.<br>
-
-![rectangle object](./assets/rectangle_position.png 'rectangle positions') 
-
-```python
-
-```
-
 
