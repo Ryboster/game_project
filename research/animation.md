@@ -33,11 +33,3 @@ This will not account for transparent images however. To account for that, you n
 image_surface = pygame.image.load('graphics/snail.png').convert_alpha()
 ```
 
-
-### Rectangles
-
-2 core functions:
-* Precise positioning of surfaces
-* Basic Collisions
-
-Rctangles allow for changing the origin point on the surface. 
