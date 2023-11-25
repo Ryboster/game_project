@@ -1,0 +1,14 @@
+{
+	"icon": "/",
+	"name": "sword",
+	"weight": 3,
+	"consumable": false,
+	"equippable": true,
+	"value": 120,
+	"durability": 100,
+	"stackable": false,
+	"description": "A thinly edged piece of steel",
+	"min_lvl": 0,
+	"required_skill": null
+}
+
