@@ -1,0 +1,15 @@
+{
+	"icon": "/",
+	"name": "carrot",
+	"weight": 0.1,
+	"consumable": true,
+	"equippable": false,
+	"effect": "x",
+	"value": 5,
+	"durability": 100,
+	"stackable": true,
+	"description": "An orange vegetable",
+	"min_lvl": 0,
+	"required_skill": null
+}
+
