@@ -1,5 +1,4 @@
 from effects import Effects as effects
-from main_character import Character as char
 
 class Item:
     def __init__(self, icon, name, weight, consumable, equippable, effect, value, durability, stackable, description, min_lvl, required_skill):
