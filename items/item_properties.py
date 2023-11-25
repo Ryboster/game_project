@@ -1,4 +1,8 @@
 from effects import Effects as effects
+import json
+
+with open('carrot.json', "r") as x:
+    carrot = json.load(x)
 
 class Item:
     def __init__(self, icon, name, weight, consumable, equippable, effect, value, durability, stackable, description, min_lvl, required_skill):
@@ -34,4 +38,3 @@ class Item:
 
     def use(self, target):
         self.effect.apply(target)
-
