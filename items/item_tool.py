@@ -314,6 +314,21 @@ class ItemCreator:
             except ValueError:
                 continue
 
+    def calculate_id(self):
+        self.highest_id = 0
+        for filename in os.listdir('./'):
+            if filename.endswith('.json'):
+                with open(filename, 'r') as item:
+                    data = json.load(item)
+                id = data['id']
+                try:
+                    id = int(id)
+                    if self.highest_id < id:
+                        self.highest_id = id
+                except ValueError:
+                    continue
+        self.highest_id += 1
+
 
 item = ItemCreator()
 item.prompt_name()
@@ -334,6 +349,7 @@ if item.category == 'weapon':
     item.prompt_crit_chance()
     item.prompt_min_lvl()
     item.prompt_req_skills()
+    item.calculate_id()
     item.final_dict = {
         'name': item.name,
         'equippable': True,
@@ -345,7 +361,8 @@ if item.category == 'weapon':
         'hands': item.hands,
         'crit_chance': item.crit_chance,
         'required_lvl': item.min_lvl,
-        'description': item.description
+        'description': item.description,
+        'id': item.highest_id
     }
 
 
@@ -354,6 +371,7 @@ elif item.category == 'armor':
     item.prompt_speed_modifier()
     item.prompt_defense()
     item.prompt_min_lvl()
+    item.calculate_id()
 
     item.final_dict = {
         'name': item.name,
@@ -365,12 +383,13 @@ elif item.category == 'armor':
         'weight': item.weight,
         'value': item.value,
         'description': item.description,
-        'id': 'placeholden'
+        'id': item.highest_id
     }
 
 elif item.category == 'consumable':
     item.prompt_duration()
     item.prompt_quantity()
+    item.calculate_id()
 
     item.final_dict = {
         'name': item.name,
@@ -381,13 +400,14 @@ elif item.category == 'consumable':
         'duration': item.duration,
         'quantity': item.quantity,
 
-        'id': 'placeholder'
+        'id': item.highest_id
     }
 
 elif item.category == 'tool':
 
     item.prompt_min_lvl()
     item.prompt_durability()
+    item.calculate_id()
 
     item.final_dict = {
         'name': item.name,
@@ -397,7 +417,7 @@ elif item.category == 'tool':
         'weight': item.weight,
         'value': item.value,
         'description': item.description,
-        'id': 'placeholder'
+        'id': item.highest_id
     }
 
 elif item.category == 'accessory':
@@ -405,6 +425,7 @@ elif item.category == 'accessory':
     item.prompt_attack_speed()
     item.prompt_speed_modifier()
     item.prompt_defense()
+    item.calculate_id()
 
     item.final_dict = {
         'name': item.name,
@@ -416,14 +437,15 @@ elif item.category == 'accessory':
         'speed_modifier': item.speed_modifier,
         'defense': item.defense,
         'description': item.description,
-        'id': 'placeholder'
+        'id': item.highest_id
 
     }
 elif item.category == 'quest item':
+    item.calculate_id()
     item.final_dict = {
         'name': item.name,
         'description': item.description,
-        'id': 'placeholder'
+        'id': item.highest_id
 
     }
 
