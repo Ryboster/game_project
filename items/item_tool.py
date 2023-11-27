@@ -175,14 +175,14 @@ class ItemCreator:
 
     def prompt_range(self):
         while True:
-            a_s = input('Enter attack speed 	> ')
+            range = input('Enter range 	> ')
             try:
-                a_s = float(a_s)
+                range = float(range)
                 break
             except ValueError:
                 continue
 
-        self.range = a_s
+        self.range = range
 
     def prompt_defense(self):
         while True:
