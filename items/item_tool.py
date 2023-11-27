@@ -362,6 +362,7 @@ if item.category == 'weapon':
         'crit_chance': item.crit_chance,
         'required_lvl': item.min_lvl,
         'description': item.description,
+        'required_skills': item.required_skills,
         'id': item.highest_id
     }
 

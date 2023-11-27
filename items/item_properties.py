@@ -1,37 +1,20 @@
 from effects import Effects as effects
 
 class Item:
-    def __init__(self, icon, name, weight, consumable, equippable, effect, value, durability, stackable, description, min_lvl, required_skill):
-        self.icon = icon
-        self.name = name
+    def __init__(self, item_dict):
+        self.item_dict = item_dict
 
-        self.weight = weight
+        self.name = self.item_dict['name']
+        self.weight = float(self.item_dict['weight'])
+        
+        self.value = int(self.item_dict['value'])
+        self.id = int(self.item_dict['id'])
 
-        self.consumable = consumable
-        self.equippable = equippable
-
-        self.effect = effect
-        self.durability = durability
-        self.value = value + (durability / 2)
-
-        self.stackable = stackable
-
-        self.required_lvl = min_lvl
-        self.required_skill = required_skill
+        self.description = self.item_dict['description']
 
     def display_info(self):
-        print(f'name: {self.name}\n',
-              f'icon path:{self.icon}\n',
-              f'weight: {self.weight}\n',
-              f'consumable: {self.consumable}\n',
-              f'equippable: {self.equippable}\n',
-              f'effect: {self.effect}\n',
-              f'value: ${self.value}\n',
-              f'durability: {self.durability}/100\n',
-              f'stackable: {self.stackable}\n',
-              f'required lvl: {self.required_lvl}\n',
-              f'required skill: {self.required_skill}')
-
+        print(self.item_dict)
     def use(self, target):
-        self.effect.apply(target)
+        # Define the behaviour of the item
+        pass
 
