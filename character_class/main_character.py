@@ -16,15 +16,29 @@ class Character:
                                 gold = 1000,
                                 experience = 0,
                                 level = 1)
+        self.inventory = []
+        self.equipment = {
+            'head': None,
+            'chest': None,
+            'legs': None,
+            'feet': None,
+            'ring1': None,
+            'ring2': None,
+            'necklace': None,
+            'left_hand': None,
+            'right_hand': None}
 
-    def state(self, state):
+    def equip_item(self, item, slot):
+        if item in self.inventory and self.equipment[slot] == None:
+            self.inventory.remove(item)
+            self.equipment[slot] == item
+        elif item in self.inventory and self.equipment[slot] != None:
+            self.inventory.remove(item)
+            self.inventory.append(self.equipment[slot])
+            self.equipment[slot] = item
+
+    def change_state(self, state):
         self.state = state
-
-    def use(self, item):
-        print(item)
-
-    def apply_effect(self, effect):
-        self.state(effect)
 
     def take_damage(self, damage):
         self.stats.hp -= damage
@@ -49,9 +63,6 @@ class Character:
         Mana: {self.stats.mana}/{self.stats.max_mana}\n
         ${self.stats.gold}\n''')
 
-    def attack(self, target):
-        target.take_damage(self.stats.attack)
+    def attack(self, target, damage):
+        target.take_damage(damage)
 
-
-jeff = Character()
-jeff.display_info()
