@@ -25,7 +25,7 @@ image_surface = pygame.image.load('graphics/snail.png').convert()
 
 ```
 
-All this does is converts the image into something pygame works on easily. Crucial optimisation step.<br>
+All this does is converts the image into something pygame works on easily. It is a Crucial optimisation step.<br>
 
 This will not account for transparent images however. To account for that, you need to parse the alpha channel in your text format. You can do that easily by using ```convert_alpha()``` instead.<br>
 

@@ -13,7 +13,7 @@ while True:
 Initializing that surface, you need to pass it a tuple containing dimensions.<br>
 
 
-# Regular surface
+# Regular surfaces
 
 Regular surfaces go on top of the display surface. There can be any number of them.<br>
 
