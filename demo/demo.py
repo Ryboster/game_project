@@ -90,6 +90,8 @@ class Event_handler:
 				player.rect.bottom += speed
 
 
+
+
 screen = pygame.display.set_mode((700, 400))
 pygame.display.set_caption('bootleg')
 clock = pygame.time.Clock()
@@ -102,11 +104,33 @@ hero_walk = [hero_surface, hero_surface1]
 
 
 sky_surface = pygame.image.load('graphics/Sky.png').convert_alpha()
-sky_rect = sky_surface.get_rect(topleft=(0,0))
+sky_rect = sky_surface.get_rect(topleft=(0,-50))
 
 ground_surface = pygame.image.load('graphics/ground.png').convert_alpha()
+ground_rect = ground_surface.get_rect(topleft=(0, 250))
+
 text_surface = pixel_font.render('Furiously Fast Snails 2', True, 'Black')
 text_rect = text_surface.get_rect(center=(350, 50))
+
+class Score:
+	def __init__(self, rect_pos):
+
+		self.x, self.y = rect_pos
+		self.score = 0
+
+
+	def update_score(self, second):
+
+		self.score_surf = pixel_font.render(f'SCORE: {self.score}', True, 'Black')
+		self.text_rect = self.score_surf.get_rect(center = (self.x,self.y+30))
+
+		second += 1
+
+		if second == 60:
+			self.score += 1
+			second = 0
+
+		return second
 
 
 hero_index = 0
@@ -117,6 +141,10 @@ running = True
 held_keys = []
 
 snail = Snail(340)
+second = 0
+
+score = Score(text_rect.center)
+second = score.update_score(second)
 
 while running:
 	condition = True
@@ -128,20 +156,28 @@ while running:
 	else:
 		player.surf = hero_walk[0]
 
-	screen.blit(ground_surface,player.rect.center)
+#	second = score.update_score(second)
+
+	
 	screen.blit(sky_surface, sky_rect)
+	screen.blit(ground_surface,ground_rect)
 	screen.blit(snail.surf, snail.rect)
 	snail.animate_snail()
 
 	if player.rect.colliderect(snail.rect):
 		condition = False
+		second = score.update_score(second)
+
 	else:
 		condition = True
 
 	snail.move_snail(condition)
 
+	
+
 	pygame.draw.rect(screen, 'pink', text_rect)
 	screen.blit(text_surface, text_rect)
+	screen.blit(score.score_surf, score.text_rect)
 
 	screen.blit(player.surf, player.rect)
 
