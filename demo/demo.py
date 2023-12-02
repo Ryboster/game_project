@@ -1,187 +1,142 @@
-from tabnanny import check
-import pygame
-from sys import exit
+import pygame, sys
+from random import randint
 
-pygame.init()
+
+class Tree(pygame.sprite.Sprite):
+    def __init__(self,pos,group):
+        super().__init__(group)
+        self.image = pygame.image.load('graphics/tree.png').convert_alpha()
+        self.rect = self.image.get_rect(topleft = pos)
+        
 
 class Player(pygame.sprite.Sprite):
-	def __init__(self):
-		super().__init__()
-		self.surf = pygame.image.load('graphics/Player/player_walk_1.png').convert_alpha()
-		self.rect = self.surf.get_rect(midbottom=(50, 300))
-		self.hero_index = 0
+    def __init__(self,pos,group):
+        super().__init__(group)
+        self.image = pygame.image.load('graphics/player.png').convert_alpha()
+        self.rect = self.image.get_rect(center = pos)
+        self.direction = pygame.math.Vector2()
+        self.speed = 3
+        self.max_speed = 10
+        self.acceleration = 0.1
+        
+    def input(self):
+        keys = pygame.key.get_pressed()
+        up = keys[pygame.K_UP]
+        down = keys[pygame.K_DOWN]
+        right = keys[pygame.K_RIGHT]
+        left = keys[pygame.K_LEFT]
+        
+        if up:
+            self.direction.y = -1
+        elif down:
+            self.direction.y = 1
+        elif not up and not down and self.speed > 0.1 and (left or right):
+            self.direction.y = 0  
+                        
+        if right:
+            self.direction.x = 1
+        elif left:
+            self.direction.x = -1
+        elif not right and not left and self.speed > 0.1 and (up or down):
+            self.direction.x = 0
+            
+        if not up and not down and not right and not left:
+            self.speed /= 1.3
+            print(self.speed)
+            if self.speed <= 0.1:
+                self.direction.x = 0
+                self.direction.y = 0
+            
+    def update(self):
+        self.input()
+        
+        self.speed += self.acceleration
+        self.speed = min(self.speed, self.max_speed)
+        
+        #self.rect.center += self.direction * self.speed
+        
+        if self.direction.x and not self.direction.y:
+            self.rect.center += self.direction * self.speed
+        elif self.direction.y and not self.direction.x:
+            self.rect.center += self.direction * self.speed
+        elif self.direction.y and self.direction.x:
+            self.rect.center += (self.direction / 1.5) * self.speed
+                
+        
+class CameraGroup(pygame.sprite.Group):
+    def __init__(self):
+        super().__init__()
+        self.display_surf = pygame.display.get_surface()
+        
+        # Camera offset
+        self.offset = pygame.math.Vector2()
+        self.half_W = self.display_surf.get_size()[0] // 2
+        self.half_y = self.display_surf.get_size()[1] // 2
+        
+        # Ground
+        self.ground_surf = pygame.image.load('graphics/ground.png').convert_alpha()
+        self.ground_rect = self.ground_surf.get_rect(topleft=(0,0))
+        
+    def center_target(self, target):
+        self.offset.x = target.rect.centerx - self.half_W
+        self.offset.y = target.rect.centery - self.half_y
+    
+    def custom_draw(self, player):
+        
+        self.center_target(player)
+        
+        # ground
+        ground_offset = self.ground_rect.topleft - self.offset
+        self.display_surf.blit(self.ground_surf,ground_offset)
+        
+        # active elements
+        for sprite in sorted(self.sprites(), key=lambda sprite: sprite.rect.centery):
+            offset_pos = sprite.rect.topleft - self.offset
+            self.display_surf.blit(sprite.image, offset_pos)
+        
+        
+pygame.init()
 
-	def animate_player(self):
-
-		global hero_index
-		self.hero_index += 0.1
-
-		if self.hero_index >= len(hero_walk):
-			self.hero_index = 0
-		self.surf = hero_walk[int(self.hero_index)]
-
-
-class Snail(pygame.sprite.Sprite):
-	def __init__(self, y_pos):
-		super().__init__()
-		self.surf = pygame.image.load('graphics/snail/snail1.png')
-		self.surf1 = pygame.image.load('graphics/snail/snail2.png')
-		self.snail_move = [self.surf, self.surf1]
-
-		self.rect = self.surf.get_rect(midbottom=(600, y_pos))
-		self.snail_index = 0
-
-	def animate_snail(self):
-		self.snail_index += 0.1
-		if self.snail_index >= len(self.snail_move):
-			self.snail_index = 0
-		self.surf = self.snail_move[int(self.snail_index)]
-
-	def move_snail(self, condition):
-		if condition:
-			self.rect.left -= 2
-			if snail.rect.left <= 0:
-				snail.rect.left = 600
-
-class Event_handler:
-	def __init__(self, held_keys, player):
-		for event in pygame.event.get():
-			if event.type == pygame.QUIT:
-				pygame.quit()
-				exit()
-			if event.type == pygame.MOUSEBUTTONDOWN:
-				if player.rect.collidepoint(event.pos):
-					print('clicked player')
-				elif snail.rect.collidepoint(event.pos):
-					print('clicked snail')
-					
-			if event.type == pygame.KEYDOWN:
-				if event.key == pygame.K_w:
-					held_keys.append('up')
-				elif event.key == pygame.K_s:
-					held_keys.append('down')
-				elif event.key == pygame.K_a:
-					held_keys.append('left')
-				elif event.key == pygame.K_d:
-					held_keys.append('right')
-			elif event.type == pygame.KEYUP:
-				if event.key == pygame.K_w:
-					held_keys.remove('up')
-				elif event.key == pygame.K_s:
-					held_keys.remove('down')
-				elif event.key == pygame.K_a:
-					held_keys.remove('left')
-				elif event.key == pygame.K_d:
-					held_keys.remove('right')
-		self.check_held(held_keys, player)
-
-	def check_held(self, held_keys, player):
-		speed = 4
-		for x in held_keys:
-			if len(held_keys) > 1:
-				speed = 2 
-			if 'up' in held_keys:
-				player.rect.top -= speed
-			if 'left' in held_keys:
-				player.rect.left -= speed
-			if 'right' in held_keys:
-				player.rect.right += speed
-			if 'down' in held_keys:
-				player.rect.bottom += speed
-
-
-
-
-screen = pygame.display.set_mode((700, 400))
-pygame.display.set_caption('bootleg')
+screen = pygame.display.set_mode((1280, 720))
 clock = pygame.time.Clock()
 
-pixel_font = pygame.font.Font('font/Pixeltype.ttf', 50)
-
-hero_surface = pygame.image.load('graphics/Player/player_walk_1.png').convert_alpha()
-hero_surface1 = pygame.image.load('graphics/Player/player_walk_2.png').convert_alpha()
-hero_walk = [hero_surface, hero_surface1]
+camera_group = CameraGroup()
+player = Player((640, 360), camera_group)
+trees = []
 
 
-sky_surface = pygame.image.load('graphics/Sky.png').convert_alpha()
-sky_rect = sky_surface.get_rect(topleft=(0,-50))
-
-ground_surface = pygame.image.load('graphics/ground.png').convert_alpha()
-ground_rect = ground_surface.get_rect(topleft=(0, 250))
-
-text_surface = pixel_font.render('Furiously Fast Snails 2', True, 'Black')
-text_rect = text_surface.get_rect(center=(350, 50))
-
-class Score:
-	def __init__(self, rect_pos):
-
-		self.x, self.y = rect_pos
-		self.score = 0
-
-
-	def update_score(self, second):
-
-		self.score_surf = pixel_font.render(f'SCORE: {self.score}', True, 'Black')
-		self.text_rect = self.score_surf.get_rect(center = (self.x,self.y+30))
-
-		second += 1
-
-		if second == 60:
-			self.score += 1
-			second = 0
-
-		return second
-
-
-hero_index = 0
-
-player = Player()
-
-running = True
-held_keys = []
-
-snail = Snail(340)
-second = 0
-
-score = Score(text_rect.center)
-second = score.update_score(second)
-
-while running:
-	condition = True
-	event = Event_handler(held_keys, player)
-
-
-	if len(held_keys) > 0:
-		player.animate_player()
-	else:
-		player.surf = hero_walk[0]
-
-#	second = score.update_score(second)
-
-	
-	screen.blit(sky_surface, sky_rect)
-	screen.blit(ground_surface,ground_rect)
-	screen.blit(snail.surf, snail.rect)
-	snail.animate_snail()
-
-	if player.rect.colliderect(snail.rect):
-		condition = False
-		second = score.update_score(second)
-
-	else:
-		condition = True
-
-	snail.move_snail(condition)
-
-	
-
-	pygame.draw.rect(screen, 'pink', text_rect)
-	screen.blit(text_surface, text_rect)
-	screen.blit(score.score_surf, score.text_rect)
-
-	screen.blit(player.surf, player.rect)
-
-
-	pygame.display.update()
-	clock.tick(60)
-
+''' 
+        if up:
+            self.direction.y = -1
+        elif down:
+            self.direction.y = 1
+        else:
+            self.direction.y = 0
+            
+        if right:
+            self.direction.x = 1
+        elif left:
+            self.direction.x = -1
+        else:
+            self.direction.x = 0
+        '''    
+for i in range(20):
+    random_x = randint(0, 1000)
+    random_y = randint(0, 1000)
+    x = Tree((random_x, random_y), camera_group)
+    trees.append(x)
+    
+while True:
+    for event in pygame.event.get():
+        if event.type == pygame.QUIT:
+                pygame.quit()
+                sys.exit()
+                
+    screen.fill('#71ddee')
+        
+    camera_group.update()
+    camera_group.custom_draw(player)
+        
+    pygame.display.update()
+        
+    clock.tick(60)
