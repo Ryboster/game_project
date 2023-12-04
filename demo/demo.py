@@ -7,7 +7,7 @@ pygame.init()
 class Player(pygame.sprite.Sprite):
 	def __init__(self):
 		super().__init__()
-		self.surf = pygame.image.load('graphics/Player/player_walk_1.png').convert_alpha()
+		self.surf = pygame.image.load('demo/graphics/Player/player_walk_1.png').convert_alpha()
 		self.rect = self.surf.get_rect(midbottom=(50, 300))
 		self.hero_index = 0
 
@@ -24,8 +24,8 @@ class Player(pygame.sprite.Sprite):
 class Snail(pygame.sprite.Sprite):
 	def __init__(self, y_pos):
 		super().__init__()
-		self.surf = pygame.image.load('graphics/snail/snail1.png')
-		self.surf1 = pygame.image.load('graphics/snail/snail2.png')
+		self.surf = pygame.image.load('demo/graphics/snail/snail1.png')
+		self.surf1 = pygame.image.load('demo/graphics/snail/snail2.png')
 		self.snail_move = [self.surf, self.surf1]
 
 		self.rect = self.surf.get_rect(midbottom=(600, y_pos))
@@ -96,17 +96,17 @@ screen = pygame.display.set_mode((700, 400))
 pygame.display.set_caption('bootleg')
 clock = pygame.time.Clock()
 
-pixel_font = pygame.font.Font('font/Pixeltype.ttf', 50)
+pixel_font = pygame.font.Font('demo/font/Pixeltype.ttf', 50)
 
-hero_surface = pygame.image.load('graphics/Player/player_walk_1.png').convert_alpha()
-hero_surface1 = pygame.image.load('graphics/Player/player_walk_2.png').convert_alpha()
+hero_surface = pygame.image.load('demo/graphics/Player/player_walk_1.png').convert_alpha()
+hero_surface1 = pygame.image.load('demo/graphics/Player/player_walk_2.png').convert_alpha()
 hero_walk = [hero_surface, hero_surface1]
 
 
-sky_surface = pygame.image.load('graphics/Sky.png').convert_alpha()
+sky_surface = pygame.image.load('demo/graphics/Sky.png').convert_alpha()
 sky_rect = sky_surface.get_rect(topleft=(0,-50))
 
-ground_surface = pygame.image.load('graphics/ground.png').convert_alpha()
+ground_surface = pygame.image.load('demo/graphics/ground.png').convert_alpha()
 ground_rect = ground_surface.get_rect(topleft=(0, 250))
 
 text_surface = pixel_font.render('Furiously Fast Snails 2', True, 'Black')
