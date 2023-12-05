@@ -5,8 +5,8 @@ import pygame
 class Water(pygame.sprite.Sprite):
     def __init__(self, pos, group):
         super().__init__(group)
-        surf = pygame.image.load('graphics/water_tile.png').convert_alpha()
-        self.surf = pygame.transform.scale(surf, (100,100))
+        self.surf = pygame.image.load('graphics/water_tile.png').convert_alpha()
+        self.surf = pygame.transform.scale(self.surf, (100,100))
         self.rect = self.surf.get_rect(topleft=pos)
         self.surf.set_colorkey((0,0,0))
 
@@ -33,3 +33,7 @@ class Load:
                 else:
                     x = 50
                     y += 30
+                    
+                    
+width, height = pygame.display.get_size()
+pygame.math.Vector2((width, height))
