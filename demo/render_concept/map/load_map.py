@@ -35,5 +35,3 @@ class Load:
                     y += 30
                     
                     
-width, height = pygame.display.get_size()
-pygame.math.Vector2((width, height))
