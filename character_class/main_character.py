@@ -4,8 +4,9 @@ from effects import effects_table as effects
 import time
 from stats_class import CharacterStatistics as char_stats
 
-class Character:
+class Character(pygame.sprite.Sprite):
     def __init__(self):
+        super().__init()
         self.stats = char_stats(hp = 100,
                                 max_hp = 100,
                                 mana = 100,
