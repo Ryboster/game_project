@@ -6,6 +6,7 @@ class CameraGroup(pygame.sprite.Group):
         # Get display surface
         self.display_surf = pygame.display.get_surface()
 
+
         # Camera offset
         self.offset = pygame.math.Vector2()
         self.half_W = self.display_surf.get_size()[0] // 2
