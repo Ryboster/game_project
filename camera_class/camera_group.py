@@ -20,14 +20,25 @@ class CameraGroup(pygame.sprite.Group):
         self.zoom_level = 1.0 
         
     def center_target(self, target):
+        # Recalculate offset
         self.offset.x = target.rect.centerx - self.half_W
         self.offset.y = target.rect.centery - self.half_y
 
+        # Place camera_rect on player
         self.camera_rect.centerx = target.rect.centerx - self.offset.x
         self.camera_rect.centery = target.rect.centery - self.offset.y
         self.camera_rect.center = target.rect.center
         
     def draw(self, player):
+        
+        # Check if zooming
+        keys = pygame.key.get_pressed()
+        if keys[pygame.K_UP]:
+            self.zoom_level *= 1.1
+        elif keys[pygame.K_DOWN]:
+            self.zoom_level /= 1.1
+        
+        # Center camera around player    
         self.center_target(player)
         
         ## Y-Sort Camera
