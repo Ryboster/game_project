@@ -12,6 +12,8 @@ class Character(pygame.sprite.Sprite):
                                 mana = 100,
                                 max_mana = 100,
                                 speed = 2,
+                                acceleration = 0.1,
+                                max_speed = 10,
                                 strength = 5,
                                 capacity = 100,
                                 gold = 1000,
@@ -30,9 +32,9 @@ class Character(pygame.sprite.Sprite):
             'right_hand': None}
         
         self.direction = pygame.math.Vector2()
-        self.speed = 3
-        self.max_speed = 10
-        self.acceleration = 0.1
+        self.speed = self.stats.speed
+        self.max_speed = self.stats.max_speed
+        self.acceleration = self.stats.acceleration
 
     def equip_item(self, item, slot):
         if item in self.inventory and self.equipment[slot] == None:
