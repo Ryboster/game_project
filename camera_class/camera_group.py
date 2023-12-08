@@ -16,7 +16,9 @@ class CameraGroup(pygame.sprite.Group):
         # Camera Rect
         self.camera_rect = pygame.Rect(self.offset.x, self.offset.y, self.screen_size[0], self.screen_size[1])
 
-
+        # Zoom variable
+        self.zoom_level = 1.0 
+        
     def center_target(self, target):
         self.offset.x = target.rect.centerx - self.half_W
         self.offset.y = target.rect.centery - self.half_y
@@ -25,13 +27,11 @@ class CameraGroup(pygame.sprite.Group):
         self.camera_rect.centery = target.rect.centery - self.offset.y
         self.camera_rect.center = target.rect.center
         
-    def ysort(self, player):
+    def draw(self, player):
         self.center_target(player)
         
+        ## Y-Sort Camera
         for sprite in sorted(self.sprites(), key=lambda sprite: sprite.rect.centery):
-            offset_pos = sprite.rect.topleft - self.offset
+            offset_pos = (sprite.rect.topleft * self.zoom_level) - self.offset
             self.display_surf.blit(sprite, offset_pos)
-
-        # Camera Rect
-        self.camera_rect = pygame.Rect(self.offset.x, self.offset.y, self.screen_size[0], self.screen_size[1])
         
