@@ -1,12 +1,12 @@
 import pygame
-from states import states_table as states
-from effects import effects_table as effects
+#from states import states_table as states
+#from .effects import effects_class as effects
 import time
-from stats_class import CharacterStatistics as char_stats
+from stats_class.stats_class import CharacterStatistics as char_stats
 
-class Character(pygame.sprite.Sprite):
-    def __init__(self):
-        super().__init()
+class Player(pygame.sprite.Sprite):
+    def __init__(self, pos, group):
+        super().__init__(group)
         self.stats = char_stats(hp = 100,
                                 max_hp = 100,
                                 mana = 100,
@@ -30,6 +30,9 @@ class Character(pygame.sprite.Sprite):
             'necklace': None,
             'left_hand': None,
             'right_hand': None}
+        
+        self.surf = pygame.image.load('character_class/player.png')
+        self.rect = self.surf.get_rect(topleft=pos)
         
         self.direction = pygame.math.Vector2()
         self.speed = self.stats.speed
@@ -81,7 +84,7 @@ class Character(pygame.sprite.Sprite):
         down = keys[pygame.K_DOWN]
         right = keys[pygame.K_RIGHT]
         left = keys[pygame.K_LEFT]
-        
+         
         if up:
             self.direction.y = -1
         elif down:
