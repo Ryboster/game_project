@@ -1,8 +1,8 @@
 import pygame
 
-class CameraGroup(pygame.sprite.Group):
+class CameraGroup(pygame.sprite.LayeredUpdates):
     def __init__(self):
-        super().__init()
+        super().__init__()
         # Get display surface
         self.display_surf = pygame.display.get_surface()
 
@@ -15,6 +15,8 @@ class CameraGroup(pygame.sprite.Group):
 
         # Camera Rect
         self.camera_rect = pygame.Rect(self.offset.x, self.offset.y, self.screen_size[0], self.screen_size[1])
+        
+        from tile_classes.water import Water
 
 
     def center_target(self, target):
@@ -25,13 +27,23 @@ class CameraGroup(pygame.sprite.Group):
         self.camera_rect.centery = target.rect.centery - self.offset.y
         self.camera_rect.center = target.rect.center
         
+    def set_layers(self):
+        for sprite in self.sprites():
+            if isinstance(sprite, Water):
+                sprite.layer = 1
+        
     def ysort(self, player):
         self.center_target(player)
         
         for sprite in sorted(self.sprites(), key=lambda sprite: sprite.rect.centery):
-            offset_pos = sprite.rect.topleft - self.offset
-            self.display_surf.blit(sprite, offset_pos)
+            if not isinstance(sprite, type(player)) and self.camera_rect.colliderect(sprite.rect):
+                offset_pos = sprite.rect.topleft - self.offset
+                self.display_surf.blit(sprite.surf, offset_pos)
+                
+            
+        self.display_surf.blit(player.surf, player.rect.topleft - self.offset)
 
         # Camera Rect
         self.camera_rect = pygame.Rect(self.offset.x, self.offset.y, self.screen_size[0], self.screen_size[1])
+        #self.display_surf.blit(player.surf, player.rect)
         
