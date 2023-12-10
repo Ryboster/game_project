@@ -1,1 +1,3 @@
 test
+*.pyc
+map/chunk_temp/*
