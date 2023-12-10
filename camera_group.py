@@ -16,6 +16,8 @@ class CameraGroup(pygame.sprite.LayeredUpdates):
         # Camera Rect
         self.camera_rect = pygame.Rect(self.offset.x, self.offset.y, self.screen_size[0], self.screen_size[1])
         
+        self.zoom_level = 1.0
+        
 
     def center_target(self, target):
         self.offset.x = target.rect.centerx - self.half_W
@@ -26,6 +28,7 @@ class CameraGroup(pygame.sprite.LayeredUpdates):
         self.camera_rect.center = target.rect.center
         
     def set_layers(self):
+        # Set layers for different sprites
         
         from tile_classes.water import Water
         from main import TempChunk
@@ -45,7 +48,9 @@ class CameraGroup(pygame.sprite.LayeredUpdates):
         
     def ysort(self, player, net_toggle):
         
+        # Center player
         self.center_target(player)
+        
         
         for sprite in sorted(self.sprites(), key=lambda sprite: sprite.layer):
             
@@ -54,5 +59,16 @@ class CameraGroup(pygame.sprite.LayeredUpdates):
                     continue
             
             if self.camera_rect.colliderect(sprite.rect):
-                offset_pos = sprite.rect.topleft - self.offset
-                self.display_surf.blit(sprite.surf, offset_pos)
+                
+                if self.zoom_level != 1.0:
+                    scaled_size = (sprite.surf.get_size()[0] * self.zoom_level,
+                                sprite.surf.get_size()[1] * self.zoom_level)
+                    
+                    scaled_surf = pygame.transform.scale(sprite.surf, scaled_size)
+                    scaled_rect = (sprite.rect.topleft[0] * self.zoom_level, sprite.rect.topleft[1] * self.zoom_level)
+                    offset_pos = sprite.rect.topleft - self.offset
+                    offset_pos = scaled_rect - self.offset
+                    self.display_surf.blit(scaled_surf, offset_pos)
+                else: 
+                    offset_pos = sprite.rect.topleft - self.offset
+                    self.display_surf.blit(sprite.surf, offset_pos)

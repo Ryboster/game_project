@@ -67,18 +67,26 @@ while running:
         if event.type == pygame.QUIT:
             pygame.quit()
             exit()
+        elif event.type == pygame.KEYDOWN:
+            if event.key == pygame.K_F1:
+                if mesh_toggle == False:
+                    mesh_toggle = True
+                    pygame.time.delay(100)
+                else:
+                    mesh_toggle = False
+                    pygame.time.delay(100)
+                    
+            if event.key == pygame.K_EQUALS or event.key == pygame.K_PLUS:
+                camera_group.zoom_level += 0.1
+                pygame.time.delay(30)
+            elif event.key == pygame.K_MINUS:
+                camera_group.zoom_level -= 0.1
+                pygame.time.delay(30)
 
-    keys = pygame.key.get_pressed()
-    
-    if keys[pygame.K_F1]:        
-            if mesh_toggle:
-                mesh_toggle = False
-            else:
-                mesh_toggle = True
-        
-    
+
     screen.fill((0,0,0))
     camera_group.ysort(player, mesh_toggle)
     camera_group.update()
     pygame.display.update()
-    
+    clock.tick(60)
+    #pygame.time.delay(5)
