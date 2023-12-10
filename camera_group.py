@@ -16,8 +16,6 @@ class CameraGroup(pygame.sprite.LayeredUpdates):
         # Camera Rect
         self.camera_rect = pygame.Rect(self.offset.x, self.offset.y, self.screen_size[0], self.screen_size[1])
         
-        from tile_classes.water import Water
-
 
     def center_target(self, target):
         self.offset.x = target.rect.centerx - self.half_W
@@ -28,22 +26,33 @@ class CameraGroup(pygame.sprite.LayeredUpdates):
         self.camera_rect.center = target.rect.center
         
     def set_layers(self):
+        
+        from tile_classes.water import Water
+        from main import TempChunk
+        from character_class.main_character import Player
+        
+        self.Water = Water
+        self.TempChunk = TempChunk
+        self.Player = Player
+        
         for sprite in self.sprites():
             if isinstance(sprite, Water):
-                sprite.layer = 1
+                self.change_layer(sprite, 1)
+            if isinstance(sprite, TempChunk):
+                self.change_layer(sprite, 0)
+            if isinstance(sprite, Player):
+                self.change_layer(sprite, 2)
         
-    def ysort(self, player):
+    def ysort(self, player, net_toggle):
+        
         self.center_target(player)
         
-        for sprite in sorted(self.sprites(), key=lambda sprite: sprite.rect.centery):
-            if not isinstance(sprite, type(player)) and self.camera_rect.colliderect(sprite.rect):
+        for sprite in sorted(self.sprites(), key=lambda sprite: sprite.layer):
+            
+            if not net_toggle:
+                if isinstance(sprite, self.Water):
+                    continue
+            
+            if self.camera_rect.colliderect(sprite.rect):
                 offset_pos = sprite.rect.topleft - self.offset
                 self.display_surf.blit(sprite.surf, offset_pos)
-                
-            
-        self.display_surf.blit(player.surf, player.rect.topleft - self.offset)
-
-        # Camera Rect
-        self.camera_rect = pygame.Rect(self.offset.x, self.offset.y, self.screen_size[0], self.screen_size[1])
-        #self.display_surf.blit(player.surf, player.rect)
-        
