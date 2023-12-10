@@ -22,7 +22,15 @@ class TempChunk(pygame.sprite.Sprite):
         self.surf = pygame.image.load(f'map/chunk_temp/{surf_name}.png')
         self.rect = self.surf.get_rect(topleft=pos)
 
-       
+class UserInterface(pygame.sprite.Sprite):
+    def __init__(self):
+        super().__init__()
+        self.image = pygame.image.load('./images/ui.png').convert_alpha()
+        self.rect = self.image.get_rect(x = 0)
+        self.image = pygame.transform.scale(self.image, (1024, 768))
+
+ui =  pygame.sprite.GroupSingle()
+ui.add(UserInterface())      
 ''' Order chunks by name '''
 ordered_names = [x for x in sorted(chunk_surfs(), key= lambda surf_name: tuple((int(surf_name[0]), int(surf_name[2]))))]
 
@@ -61,7 +69,6 @@ camera_group.set_layers()
 running = True
 mesh_toggle = False
 
-
 while running:
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
@@ -83,10 +90,11 @@ while running:
                 camera_group.zoom_level -= 0.1
                 pygame.time.delay(30)
 
-
     screen.fill((0,0,0))
+    
     camera_group.ysort(player, mesh_toggle)
     camera_group.update()
+    ui.draw(screen)
     pygame.display.update()
     clock.tick(60)
     #pygame.time.delay(5)
