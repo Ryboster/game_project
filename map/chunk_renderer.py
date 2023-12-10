@@ -114,7 +114,7 @@ class RenderChunks():
                 x = -64
                 y += 18
             
-        result_image.save(f'images/{name}.png')
+        result_image.save(f'chunk_temp/{name}.png')
 
 
 def read_csv(file_path):
