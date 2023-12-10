@@ -13,7 +13,6 @@ class RenderChunks():
         self.CHUNK_SIZE = (1024, 720)
         self.TILE_SIZE = (64, 64)
         self.CURRENT_CHUNK = 0
-        x, y = 0, 0
         self.max_tile = {
             'x': 0,
             'y': 0
@@ -33,9 +32,9 @@ class RenderChunks():
             
     ''' get maximum number of tiles per chunk'''
     def get_max_tiles(self):        
-        for i in range(0, self.CHUNK_SIZE[0], self.TILE_SIZE[0]):
+        for i in range(-64, self.CHUNK_SIZE[0], self.TILE_SIZE[0]):
             self.max_tile['x'] += 1
-        for i in range(0, self.CHUNK_SIZE[1], 19):
+        for i in range(-64, self.CHUNK_SIZE[1], 18):
             self.max_tile['y'] += 1
             print(i)
                             
@@ -46,12 +45,8 @@ class RenderChunks():
         buffer = []
         chunk = []
         chunks = []
-        x, y = 0, 0
         name_x = 0
         name_y = 0
-        
-        map_length = len(map_data)
-        
         while map_data:
             
             y_incr = False
@@ -94,12 +89,13 @@ class RenderChunks():
     def create_png(self, map_data, name):
         
         tile_images = {
-        'w': 'tile_images/water_tile.png',
-        'l': 'tile_images/ground_tile.png'
+        'W': 'tile_images/water_tile.png',
+        'L': 'tile_images/ground_tile.png'
         }                                
-        result_image = Image.new('RGB', self.CHUNK_SIZE, (0,0,0,0))
+        result_image = Image.new('RGB', (self.CHUNK_SIZE[0], self.CHUNK_SIZE[1]), (0,0,0,0))
         
-        x, y = 0, 0
+        x = -64
+        y = -64
 
         for count, row in enumerate(map_data):
             for col in row:
@@ -112,10 +108,10 @@ class RenderChunks():
                 x+= 64
             
             if count %2 == 0:
-                x = 32
+                x = -32
                 y += 18
             else:
-                x = 0
+                x = -64
                 y += 18
             
         result_image.save(f'images/{name}.png')
@@ -129,7 +125,7 @@ def read_csv(file_path):
             map_data.append([cell for cell in row])
     return map_data
 
-map_data = read_csv('tiles.csv')
+map_data = read_csv('alpha_map.csv')
 
 
 render = RenderChunks()
