@@ -4,7 +4,7 @@ import csv
 from character_class.main_character import Player as player
 from tile_classes.water import Water
 from camera_group import CameraGroup as camera_group
-from map.chunks import chunk_surfs
+from map.get_chunks import find_chunks
 from tile_classes.get_tiles import Load
 
 pygame.init()
@@ -24,7 +24,7 @@ class TempChunk(pygame.sprite.Sprite):
 
        
 ''' Order chunks by name '''
-ordered_names = [x for x in sorted(chunk_surfs(), key= lambda surf_name: tuple((int(surf_name[0]), int(surf_name[2]))))]
+ordered_names = [x for x in sorted(find_chunks(), key= lambda surf_name: tuple((int(surf_name[0]), int(surf_name[2]))))]
 
 pos = [0, 0]
 ctrl = [0,0]
