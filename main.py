@@ -23,14 +23,22 @@ class TempChunk(pygame.sprite.Sprite):
         self.rect = self.surf.get_rect(topleft=pos)
 
 class UserInterface(pygame.sprite.Sprite):
-    def __init__(self):
+    def __init__(self,screen):
         super().__init__()
-        self.image = pygame.image.load('./images/ui.png').convert_alpha()
-        self.rect = self.image.get_rect(x = 0)
-        self.image = pygame.transform.scale(self.image, (1024, 768))
+        self.screen = screen
+        #self.life_bar =life_bar
+        # self.image = pygame.image.load('./images/just_life.png').convert_alpha()
+        # self.rect = self.image.get_rect(x = 10)
+        self.life_bar = pygame.image.load('./images/life_bar.png').convert_alpha()
+        self.life_bar_rect = self.life_bar.get_rect(x = 80)
+        self.image = self.life_bar
+        self.rect = self.image.get_rect(x = 40)
+    def display_ui(self):
+        self.screen.blit(self.image, self.rect)
 
-ui =  pygame.sprite.GroupSingle()
-ui.add(UserInterface())      
+#ui =  pygame.sprite.Group()
+#ui.add(UserInterface())     
+ui =  UserInterface(screen)
 ''' Order chunks by name '''
 ordered_names = [x for x in sorted(chunk_surfs(), key= lambda surf_name: tuple((int(surf_name[0]), int(surf_name[2]))))]
 
@@ -94,7 +102,8 @@ while running:
     
     camera_group.ysort(player, mesh_toggle)
     camera_group.update()
-    ui.draw(screen)
+    #ui.draw(screen)
+    ui.display_ui()
     pygame.display.update()
     clock.tick(60)
     #pygame.time.delay(5)
