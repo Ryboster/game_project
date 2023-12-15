@@ -23,18 +23,34 @@ class TempChunk(pygame.sprite.Sprite):
         self.rect = self.surf.get_rect(topleft=pos)
 
 class UserInterface(pygame.sprite.Sprite):
-    def __init__(self,screen):
+    def __init__(self, screen):
         super().__init__()
+        self.ui = pygame.sprite.Group()
         self.screen = screen
-        #self.life_bar =life_bar
-        # self.image = pygame.image.load('./images/just_life.png').convert_alpha()
-        # self.rect = self.image.get_rect(x = 10)
-        self.life_bar = pygame.image.load('./images/life_bar.png').convert_alpha()
-        self.life_bar_rect = self.life_bar.get_rect(x = 80)
-        self.image = self.life_bar
-        self.rect = self.image.get_rect(x = 40)
+
+        # Create sprites for "just life" and "life bar"
+        self.just_life = pygame.sprite.Sprite()
+        self.just_life.image = pygame.image.load('./images/just_life.png').convert_alpha()
+        self.just_life.rect = self.just_life.image.get_rect(topleft=(115, 40))
+        self.just_life.image = pygame.transform.scale(self.just_life.image, (208,30))
+
+        self.life_bar = pygame.sprite.Sprite()
+        self.life_bar.image = pygame.image.load('./images/life_bar.png').convert_alpha()
+        self.life_bar.rect = self.life_bar.image.get_rect(topleft=(0, 0))
+
+        self.map = pygame.sprite.Sprite()
+        self.map.image = pygame.image.load('./images/map_bg.png').convert_alpha()
+        self.map.rect = self.life_bar.image.get_rect(topright=((screen.get_size()[0] +100), 0))
+
+        self.menu = pygame.sprite.Sprite()
+        self.menu.image = pygame.image.load('./images/menu.png').convert_alpha()
+        self.menu.rect = self.life_bar.image.get_rect(midtop=((screen.get_size()[0] // 2+40), 0))
+        # Add both sprites to the ui group
+        self.ui.add(self.just_life, self.life_bar,self.menu,self.map)
+
     def display_ui(self):
-        self.screen.blit(self.image, self.rect)
+        # Blit all sprites in the ui group
+        self.ui.draw(self.screen)
 
 #ui =  pygame.sprite.Group()
 #ui.add(UserInterface())     
