@@ -6,55 +6,24 @@ from tile_classes.water import Water
 from camera_group import CameraGroup as camera_group
 from map.chunks import chunk_surfs
 from tile_classes.get_tiles import Load
+from ui.user_interface import UserInterface
 
 pygame.init()
 
 screen = pygame.display.set_mode((1024, 720))
 screen_rect = screen.get_rect(topleft=(0,0))
 
+ui =  UserInterface(screen)
 camera_group = camera_group()
 player = player((screen.get_size()[0] // 2, screen.get_size()[0] // 2), camera_group)
-
+print(screen.get_size()[0],screen.get_size()[1])
 ''' Temporary Chunk Class '''
 class TempChunk(pygame.sprite.Sprite):
     def __init__(self, pos, group, surf_name):
         super().__init__(group)
         self.surf = pygame.image.load(f'map/chunk_temp/{surf_name}.png')
         self.rect = self.surf.get_rect(topleft=pos)
-
-class UserInterface(pygame.sprite.Sprite):
-    def __init__(self, screen):
-        super().__init__()
-        self.ui = pygame.sprite.Group()
-        self.screen = screen
-
-        # Create sprites for "just life" and "life bar"
-        self.just_life = pygame.sprite.Sprite()
-        self.just_life.image = pygame.image.load('./images/just_life.png').convert_alpha()
-        self.just_life.rect = self.just_life.image.get_rect(topleft=(115, 40))
-        self.just_life.image = pygame.transform.scale(self.just_life.image, (208,30))
-
-        self.life_bar = pygame.sprite.Sprite()
-        self.life_bar.image = pygame.image.load('./images/life_bar.png').convert_alpha()
-        self.life_bar.rect = self.life_bar.image.get_rect(topleft=(0, 0))
-
-        self.map = pygame.sprite.Sprite()
-        self.map.image = pygame.image.load('./images/map_bg.png').convert_alpha()
-        self.map.rect = self.life_bar.image.get_rect(topright=((screen.get_size()[0] +100), 0))
-
-        self.menu = pygame.sprite.Sprite()
-        self.menu.image = pygame.image.load('./images/menu.png').convert_alpha()
-        self.menu.rect = self.life_bar.image.get_rect(midtop=((screen.get_size()[0] // 2+40), 0))
-        # Add both sprites to the ui group
-        self.ui.add(self.just_life, self.life_bar,self.menu,self.map)
-
-    def display_ui(self):
-        # Blit all sprites in the ui group
-        self.ui.draw(self.screen)
-
-#ui =  pygame.sprite.Group()
-#ui.add(UserInterface())     
-ui =  UserInterface(screen)
+  
 ''' Order chunks by name '''
 ordered_names = [x for x in sorted(chunk_surfs(), key= lambda surf_name: tuple((int(surf_name[0]), int(surf_name[2]))))]
 
@@ -118,7 +87,6 @@ while running:
     
     camera_group.ysort(player, mesh_toggle)
     camera_group.update()
-    #ui.draw(screen)
     ui.display_ui()
     pygame.display.update()
     clock.tick(60)
