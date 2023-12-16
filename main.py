@@ -6,35 +6,36 @@ from tile_classes.water import Water
 from camera_group import CameraGroup as camera_group
 from map.get_chunks import find_chunks
 from tile_classes.get_tiles import Load
+from ui.user_interface import UserInterface
+from tile_classes.tempchunk import TempChunk
 
 pygame.init()
 
 screen = pygame.display.set_mode((1024, 720))
 screen_rect = screen.get_rect(topleft=(0,0))
 
+ui =  UserInterface(screen)
 camera_group = camera_group()
 player = player((screen.get_size()[0] // 2, screen.get_size()[0] // 2), camera_group)
 
-''' Temporary Chunk Class '''
-class TempChunk(pygame.sprite.Sprite):
-    def __init__(self, pos, group, surf_name):
-        super().__init__(group)
-        self.surf = pygame.image.load(f'map/chunk_temp/{surf_name}.png')
-        self.rect = self.surf.get_rect(topleft=pos)
 
-       
+  
 ''' Order chunks by name '''
 ordered_names = [x for x in sorted(find_chunks(), key= lambda surf_name: tuple((int(surf_name[0]), int(surf_name[2]))))]
 
 pos = [0, 0]
 ctrl = [0,0]
 screen_dims = screen.get_size()
+chunks = []
 
 ''' Load in chunks ''' ### Temporary Solution
 for count, surf_name in enumerate(ordered_names):
     
     comparison_var = [int(surf_name[0]), int(surf_name[2])]
-    TempChunk(tuple((pos[0], pos[1])), camera_group, surf_name)
+    chunk = TempChunk(tuple((pos[0], pos[1])), camera_group, surf_name)
+    chunks.append(chunk)
+    
+    
     print('-' * 20, '\nCHUNKED!\n', f'\nNAME: {surf_name}\n', f'\nPOSITION: {pos}\n','-' *20)
     
     try:
@@ -55,12 +56,15 @@ for count, surf_name in enumerate(ordered_names):
  
 clock = pygame.time.Clock()
 
-Load().load(camera_group)
-camera_group.set_layers()
+#Load().compile()
+tiles = Load().load()
+#print(tiles)
+camera_group.all_objects = tiles
+camera_group.all_chunks = chunks
+
         
 running = True
 mesh_toggle = False
-
 
 while running:
     for event in pygame.event.get():
@@ -83,10 +87,11 @@ while running:
                 camera_group.zoom_level -= 0.1
                 pygame.time.delay(30)
 
-
     screen.fill((0,0,0))
+    
     camera_group.ysort(player, mesh_toggle)
     camera_group.update()
+    ui.display_ui()
     pygame.display.update()
     clock.tick(60)
     #pygame.time.delay(5)
