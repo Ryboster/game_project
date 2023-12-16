@@ -1,34 +1,27 @@
 import csv
 import pygame
-#from ..tile_classes.water import Water
-#from ..main import Water
+import pickle
+from tile_classes.tile import Tile
+
 
 class Load:
     def __init__(self):
         pass
-    
-        from .water import Water
-
-        self.map_dict = {
-            'W': Water,
-        }
         
-                        
-    def load(self, camera_group):
-        x = -128
-        y = -64
+    def compile(self):
+        x = 0
+        y = 0
         iters = 0
-        #image = pygame.load.image('water_border.png')
-        sprites_list = []
+        tiles_list = []
+        
         with open('map/alpha_map.csv', 'r') as file:
             csv_reader = csv.reader(file)
             for row in csv_reader:
                 for current_tile in row:
-                    if current_tile == 'W':
-                        tile = self.map_dict[current_tile]((x, y), camera_group)
-                        sprites_list.append(tile)
-                        #camera_group.change_layer(tile, 0)
+                    tile = Tile((x,y),'W')
+                    tiles_list.append(tile)
                     x += 64
+                    
                 if iters % 2 == 0:
                     x = -32
                     y += 18
@@ -36,5 +29,16 @@ class Load:
                     x = -64
                     y += 18
                 iters += 1
-                                
-        return sprites_list
+        
+        with open('pre-compiled_tiles.pkl', 'wb') as file:
+            pickle.dump(tiles_list, file)
+                        
+                        
+    def load(self):
+        all_tiles = {}
+        with open('pre-compiled_tiles.pkl', 'rb') as tiles:
+            tiles = pickle.load(tiles)
+            for tile in tiles:
+                all_tiles[tile.pos] = tile.id
+            
+        return all_tiles

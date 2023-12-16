@@ -33,6 +33,7 @@ class Player(pygame.sprite.Sprite):
         
         self.surf = pygame.image.load('character_class/player.png')
         self.rect = self.surf.get_rect(topleft=pos)
+        self.pos = pos
         
         self.direction = pygame.math.Vector2()
         self.speed = self.stats.speed
