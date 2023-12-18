@@ -8,6 +8,8 @@ from map.get_chunks import find_chunks
 from tile_classes.get_tiles import Load
 from ui.user_interface import UserInterface
 from tile_classes.tempchunk import TempChunk
+from effects.effects_class import mouseEvents
+
 
 pygame.init()
 
@@ -17,7 +19,6 @@ screen_rect = screen.get_rect(topleft=(0,0))
 ui =  UserInterface(screen)
 camera_group = camera_group()
 player = player((screen.get_size()[0] // 2, screen.get_size()[0] // 2), camera_group)
-
 
   
 ''' Order chunks by name '''
@@ -53,7 +54,7 @@ for count, surf_name in enumerate(ordered_names):
         break
 
  
- 
+
 clock = pygame.time.Clock()
 
 #Load().compile()
@@ -86,6 +87,10 @@ while running:
             elif event.key == pygame.K_MINUS:
                 camera_group.zoom_level -= 0.1
                 pygame.time.delay(30)
+
+        elif event.type == pygame.MOUSEBUTTONUP:
+            mouseEvents()
+
 
     screen.fill((0,0,0))
     

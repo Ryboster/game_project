@@ -11,3 +11,6 @@ class Effects:
         elif self.type == 'take_damage':
             target.take_damage(self.magnitude)
     '''add additional types as needed''' 
+
+def mouseEvents():
+    print('mouseEvents test')
