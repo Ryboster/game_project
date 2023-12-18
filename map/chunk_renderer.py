@@ -1,6 +1,7 @@
 from PIL import Image
 import csv
 from random import randint
+import sys
 
 class Chunk():
     def __init__(self, f: int, l: int, data: list):
@@ -17,6 +18,13 @@ class RenderChunks():
             'x': 0,
             'y': 0
         }
+        
+    ''' Status bar '''
+    def print_status_bar(self, iteration, total, length= 50, prefix='', fill = '█'):
+        percent = ("{0:.1f}").format(100 * (iteration / float(total)))
+        filled_length = int(length * iteration // total)
+        bar = fill * filled_length + '-' * (length - filled_length)
+        sys.stdout.write('\r%s |%s| %s%s %s' % (prefix ,bar, percent, '%', 'Completed'))
         
     ''' get maximum number of chunks per map '''
     def get_chunk_num(self, map_data):   
@@ -134,6 +142,7 @@ render.get_max_tiles()
 chunks = render.partition_csv(map_data)
 
 for count, chunk in enumerate(chunks):
+    render.print_status_bar(count, len(chunks) - 1, length=50, prefix = f'\nGenerating chunk {count + 1} out of {len(chunks)}\n')
     render.create_png(chunk.chunk_data, chunk.name)
     
 print('finished')
