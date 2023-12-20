@@ -3,7 +3,7 @@ import pygame
 class UserInterface(pygame.sprite.Sprite):
     def __init__(self, screen):
         super().__init__()
-        self.ui = pygame.sprite.Group()
+        self.ElementsGroup = pygame.sprite.Group()
         self.screen = screen
 
         # Create sprites for "just life" and "life bar"
@@ -33,9 +33,22 @@ class UserInterface(pygame.sprite.Sprite):
         self.menu.image = pygame.image.load('./images/menu.png').convert_alpha()
         self.menu.rect = self.menu.image.get_rect(midtop=((screen.get_size()[0] // 2+40), 0))
         # Add both sprites to the ui group
-        self.ui.add(self.just_life, self.life_bar,self.menu,self.map,self.log_scroll,self.quick_slot_bar)
+        self.ElementsGroup.add(self.just_life, self.life_bar,self.menu,self.map,self.log_scroll,self.quick_slot_bar)
         #self.ui.add()
+        self._is = False
     def display_ui(self):
     
         # Blit all sprites in the ui group
-        self.ui.draw(self.screen)
+        self.ElementsGroup.draw(self.screen)
+    
+    def toggle_menu(self):
+        self._is =  not self._is 
+     
+        if self._is:
+            self.menu_unfolded = pygame.sprite.Sprite()
+            self.menu_unfolded.image = pygame.image.load('./images/unfolded_menu.png').convert_alpha()
+            self.menu_unfolded.rect = self.menu.image.get_rect(midtop=((self.screen.get_size()[0] // 2+40), 0))   
+            self.ElementsGroup.add(self.menu_unfolded)
+        elif not self._is:
+            self.ElementsGroup.remove(self.menu_unfolded)
+            pygame.display.flip()
