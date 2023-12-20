@@ -1,3 +1,5 @@
+import pygame
+
 class Effects:
     def __init__(self, duration, effect_type, magnitude):
         print('ini')
@@ -12,5 +14,8 @@ class Effects:
             target.take_damage(self.magnitude)
     '''add additional types as needed''' 
 
-def mouseEvents():
-    print('mouseEvents test')
+def mouseEvents(ui):
+    mousePosition = pygame.mouse.get_pos()
+    if ui.menu.rect.collidepoint(mousePosition):
+        ui.toggle_menu()
+        

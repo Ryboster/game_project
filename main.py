@@ -89,7 +89,7 @@ while running:
                 pygame.time.delay(30)
 
         elif event.type == pygame.MOUSEBUTTONUP:
-            mouseEvents()
+            mouseEvents(ui)
 
 
     screen.fill((0,0,0))
