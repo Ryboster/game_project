@@ -9,6 +9,7 @@ from tile_classes.get_tiles import Load
 from ui.user_interface import UserInterface
 from tile_classes.tempchunk import TempChunk
 from effects.effects_class import mouseEvents
+from map.chunk_renderer import RenderChunks, GetChunks
 
 
 pygame.init()
@@ -18,48 +19,22 @@ screen_rect = screen.get_rect(topleft=(0,0))
 
 ui =  UserInterface(screen)
 camera_group = camera_group()
-player = player((screen.get_size()[0] // 2, screen.get_size()[0] // 2), camera_group)
+player = player((0,0), camera_group)
 
   
 ''' Order chunks by name '''
 ordered_names = [x for x in sorted(find_chunks(), key= lambda surf_name: tuple((int(surf_name[0]), int(surf_name[2]))))]
 
-pos = [0, 0]
-ctrl = [0,0]
 screen_dims = screen.get_size()
-chunks = []
+chunk_size = RenderChunks().get_chunk_size()
 
-''' Load in chunks ''' ### Temporary Solution
-for count, surf_name in enumerate(ordered_names):
-    
-    comparison_var = [int(surf_name[0]), int(surf_name[2])]
-    chunk = TempChunk(tuple((pos[0], pos[1])), camera_group, surf_name)
-    chunks.append(chunk)
-    
-    
-    print('-' * 20, '\nCHUNKED!\n', f'\nNAME: {surf_name}\n', f'\nPOSITION: {pos}\n','-' *20)
-    
-    try:
-        if ctrl[0] != int(ordered_names[count+1][0]):
-            pos[0] += screen_dims[0]
-            pos[1] = 0
-            ctrl[0] += 1
-            ctrl[1] = 0
-            
-        else:
-            pos[1] += screen_dims[1]
-            ctrl[1] +=1
-            
-    except IndexError:
-        break
-
+chunks = GetChunks().get_chunk_list(ordered_names, camera_group)
  
-
 clock = pygame.time.Clock()
 
 #Load().compile()
+
 tiles = Load().load()
-#print(tiles)
 camera_group.all_objects = tiles
 camera_group.all_chunks = chunks
 
@@ -99,4 +74,3 @@ while running:
     ui.display_ui()
     pygame.display.update()
     clock.tick(60)
-    #pygame.time.delay(5)
