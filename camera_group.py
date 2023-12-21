@@ -95,8 +95,6 @@ class CameraGroup(pygame.sprite.LayeredUpdates):
         
         for sprite in sorted([x for x in self.sprites() if self.camera_rect.colliderect(x.rect)], key=lambda sprite: sprite.rect.topleft[1]):
             
-            self.add(sprite)
-
             if isinstance(sprite, self.Player):
                 self.change_layer(player, 2)
             
