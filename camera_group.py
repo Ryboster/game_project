@@ -68,9 +68,23 @@ class CameraGroup(pygame.sprite.LayeredUpdates):
                 self.active_elements[(x,y)] = self.all_objects[(x,y)]
                 get_expected(x,y)
                 break
+            
+        for chunk in self.all_chunks:
+            if chunk.rect.colliderect(self.camera_rect):
+                if self.has(chunk):
+                    pass
+                else:    
+                    self.add(chunk)
                            
         
+    ### Ysort is no longer relevant. Name need to change.
     def ysort(self, player, net_toggle):
+        '''
+        This function handles displaying sprites on screen in the right order, accounting for offset.
+        It centers player sprite with call to self.center_target().
+        Only active elements must be displayed. The list of active elements will be dynamically managed depending on what's on screen.
+        '''
+        
         
         # Center player
         self.center_target(player)
@@ -79,13 +93,9 @@ class CameraGroup(pygame.sprite.LayeredUpdates):
         self.get_active_elements(player)
         
         
-        # Instantiate active elements
-        for elem_key in self.active_elements:
-            sprite = self.map_dict[self.all_objects[elem_key]](elem_key, self)
-            if isinstance(sprite, self.Water):
-                self.change_layer(sprite, 1)
-        
-        for sprite in sorted([x for x in self.sprites() if self.camera_rect.colliderect(x.rect)], key=lambda sprite: sprite.layer):
+        for sprite in sorted([x for x in self.sprites() if self.camera_rect.colliderect(x.rect)], key=lambda sprite: sprite.rect.topleft[1]):
+            
+            self.add(sprite)
 
             if isinstance(sprite, self.Player):
                 self.change_layer(player, 2)
@@ -104,14 +114,7 @@ class CameraGroup(pygame.sprite.LayeredUpdates):
                 offset_pos = sprite.rect.topleft - self.offset
                 offset_pos = scaled_rect - self.offset
                 self.display_surf.blit(scaled_surf, offset_pos)
-            else:
-                
+            else: 
                 offset_pos = sprite.rect.topleft - self.offset
                 self.display_surf.blit(sprite.surf, offset_pos)
-    
-        self.display_surf.blit(player.surf, player.rect.topleft - self.offset)
-        
-        for sprite in sorted([x for x in self.sprites() if not self.camera_rect.colliderect(x.rect)], key=lambda sprite: sprite.layer):
-            self.remove(sprite)
-
-            
+                    
