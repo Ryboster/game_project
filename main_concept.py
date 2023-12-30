@@ -8,7 +8,7 @@ from effects.effects_class import mouseEvents
 
 twoDArr = []
 with open("map/alpha_map.csv", newline="") as file:
-    twoDArr = np.array(list(csv.reader(file)))
+    twoDArr = np.array(list(csv.reader(file)), dtype=str)
 
 #print(twoDArr)
 pygame.init()
@@ -27,8 +27,8 @@ def createSprite(name, fileName, position, width=0, height=0):
     return name
 
 
-water = createSprite("water", "./images/water_tile", (0, 0))
-ground = createSprite("ground", "./images/ground_tile", (0, 0), 64, 64)
+water = createSprite("water", "./images/water_tile", (0, 0),128,128)
+ground = createSprite("ground", "./images/ground_tile", (0, 0), 128, 128)
 player = createSprite(
     "player",
     "./images/player",
@@ -57,7 +57,7 @@ def cut_piece_from_TwoD_Arr(coordTuple, map_data, renderedSize):
     ]
 
 
-visibleArr = cut_piece_from_TwoD_Arr(screen.get_rect().topleft, twoDArr, 16)
+visibleArr = cut_piece_from_TwoD_Arr(screen.get_rect().topleft, twoDArr, 25)
 
 
 bg_tiles_Group = pygame.sprite.Group()
@@ -88,24 +88,19 @@ def set_bg_tiles(x=0, y=0, tilesize=64):
         column += 1
         row += 1
 
-# def quicker_set_bg_tiles(x=0,y=0,tilesize=64):
-#     bg_tiles_Group.empty()
-#     start_x = screen.get_rect().midtop[0] + x
-#     start_y = screen.get_rect().midtop[1] + y
-#     value_x = start_x
-#     value_y = start_y
-#     ##
-#     for index, element in np.ndenumerate(visibleArr):
-#         bg_tiles_Group.add(
-#                 createSprite("water", "./images/water_64", (value_x,value_y), tilesize, tilesize)
-#             )
-#         value_x -= (index[0] *(tilesize / 2) )
-#         value_y += (index[1] *(tilesize / 4) )
-#         print(index, element)
+def quicker_set_bg_tiles(x=0,y=0,tilesize=128):
+    bg_tiles_Group.empty()
+    start_x = screen.get_rect().midtop[0] + x
+    start_y = screen.get_rect().midtop[1] + y
+    value_x = start_x
+    value_y = start_y
 
-# quicker_set_bg_tiles()
-#set_bg_tiles()
+    for index, element in np.ndenumerate(visibleArr):
+        value_x = start_x - (tilesize // 2) - (index[0] * (tilesize // 2)) + (index[1] * (tilesize // 2))
+        value_y = start_y + (tilesize // 4) + (index[0] * (tilesize // 4)) + (index[1] * (tilesize // 4))
+        screen.blit(ground.image, (value_x,value_y))
 
+quicker_set_bg_tiles()
 
 class playerTest():
     def __init__(self):
@@ -113,28 +108,18 @@ class playerTest():
         self.movement_x = 0
         self.movement_y = 0
     
-    def player_movement(self,event):
-        if event.key == 119 or event.key == 1073741906:
+    def player_movement(self,keys):
+        if keys[pygame.K_UP]:
             self.movement_y += 5
-            #print("event type up",self.movement_y)
-        elif event.key == 100 or event.key == 1073741903:
-            self.movement_x -= 5
-            #print("event type right")
-        elif event.key == 115 or event.key == 1073741905:
+        elif keys[pygame.K_DOWN]:
             self.movement_y -= 5
-            #print("event type down")
-        elif event.key == 97 or event.key == 1073741904:
+        elif keys[pygame.K_RIGHT]:
+            self.movement_x -= 5
+        elif keys[pygame.K_LEFT]:
             self.movement_x += 5
-            #print("event type left")
+
 
 newPlayer = playerTest()
-
-
-"""
-ARRR[1:4, 1:4]
-
-"""
-
 ui = UserInterface(screen)
 clock = pygame.time.Clock()
 
@@ -154,32 +139,15 @@ while running:
                 else:
                     mesh_toggle = False
                     pygame.time.delay(100)
-            #newPlayer.player_movement(event)
-            #set_bg_tiles(newPlayer.movement_x, newPlayer.movement_y)
-           # print(bg_tiles_Group.get_rect().topleft)
         elif event.type == pygame.MOUSEBUTTONUP:
             mouseEvents(ui)
     keys = pygame.key.get_pressed()
-    if keys[pygame.K_UP]:
-        newPlayer.player_movement(event)
-        quicker_set_bg_tiles()
-        #set_bg_tiles(newPlayer.movement_x, newPlayer.movement_y)
-    if keys[pygame.K_DOWN]:
-        newPlayer.player_movement(event)
-        quicker_set_bg_tiles()
-        #set_bg_tiles(newPlayer.movement_x, newPlayer.movement_y)
-    if keys[pygame.K_RIGHT]:
-        newPlayer.player_movement(event)
-        quicker_set_bg_tiles()
-        #set_bg_tiles(newPlayer.movement_x, newPlayer.movement_y)
-    if keys[pygame.K_LEFT]:
-        newPlayer.player_movement(event)
-        quicker_set_bg_tiles()
-        #set_bg_tiles(newPlayer.movement_x, newPlayer.movement_y)
-
+    newPlayer.player_movement(keys)
 
     screen.fill((0, 0, 255))
+    print(newPlayer.movement_x, newPlayer.movement_y)
+    quicker_set_bg_tiles(newPlayer.movement_x, newPlayer.movement_y)
     bg_tiles_Group.draw(screen)
     screen.blit(player.image, player.rect)
     pygame.display.update()
-    clock.tick(30)
+    clock.tick(60)
