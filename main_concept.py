@@ -27,7 +27,7 @@ def createSprite(name, fileName, position, width=0, height=0):
     return name
 
 
-water = createSprite("water", "./images/water_tile", (0, 0), 64, 64)
+water = createSprite("water", "./images/water_tile", (0, 0))
 ground = createSprite("ground", "./images/ground_tile", (0, 0), 64, 64)
 player = createSprite(
     "player",
@@ -63,23 +63,24 @@ visibleArr = cut_piece_from_TwoD_Arr(screen.get_rect().topleft, twoDArr, 20)
 bg_tiles_Group = pygame.sprite.Group()
 
 
-def display_bg_tiles(x=0, y=0, tilesize=64):
-    # print(screen.get_rect().midtop)
-    start_x = screen.get_rect().midtop[0]
-    start_y = screen.get_rect().midtop[1]
+def set_bg_tiles(x=0, y=0, tilesize=64):
+    bg_tiles_Group.empty()
+    start_x = screen.get_rect().midtop[0] + x
+    start_y = screen.get_rect().midtop[1] + y
     rowNum = start_x
     columnNum = start_y
     row = 1
     column = 1
     for rows in visibleArr:
         for element in rows:
-            screen.blit(ground.image, (rowNum, columnNum))
+            #screen.blit(ground.image, (rowNum, columnNum))
             bg_tiles_Group.add(
                 createSprite("water", "./images/water_64", (rowNum, columnNum), 64, 64)
             )
             rowNum -= tilesize / 2  ### Move to the left
             columnNum += tilesize / 4  ### Move to the bottom
             print(row)
+            print(len(bg_tiles_Group))
 
         # add new line start coordinates
         rowNum = start_x + ((tilesize / 2) * row)
@@ -88,17 +89,34 @@ def display_bg_tiles(x=0, y=0, tilesize=64):
         row += 1
 
 
-display_bg_tiles()
-def player_movement(event):
+set_bg_tiles()
 
-    if event.key == 119 or event.key == 1073741906:
-        print("event type up")
-    elif event.key == 100 or event.key == 1073741903:
-        print("event type right")
-    elif event.key == 115 or event.key == 1073741905:
-        print("event type down")
-    elif event.key == 97 or event.key == 1073741904:
-        print("event type left")
+
+
+class playerTest():
+    def __init__(self):
+        super().__init__()
+        self.movement_x = 0
+        self.movement_y = 0
+    
+    def player_movement(self,event):
+        if event.key == 119 or event.key == 1073741906:
+            self.movement_y -= 5
+            print("event type up",self.movement_y)
+        elif event.key == 100 or event.key == 1073741903:
+            self.movement_x += 5
+            print("event type right")
+        elif event.key == 115 or event.key == 1073741905:
+            self.movement_y += 5
+            print("event type down")
+        elif event.key == 97 or event.key == 1073741904:
+            self.movement_x -= 5
+            print("event type left")
+
+newPlayer = playerTest()
+
+
+
 
 ###
 # player = createSprite("player",
@@ -201,11 +219,12 @@ while running:
                 else:
                     mesh_toggle = False
                     pygame.time.delay(100)
-            player_movement(event)
+            newPlayer.player_movement(event)
+            set_bg_tiles(newPlayer.movement_x, newPlayer.movement_y)
         elif event.type == pygame.MOUSEBUTTONUP:
             mouseEvents(ui)
 
-    screen.fill((0, 0, 0))
+    screen.fill((0, 0, 255))
     bg_tiles_Group.draw(screen)
     screen.blit(player.image, player.rect)
     pygame.display.update()
