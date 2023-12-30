@@ -10,7 +10,7 @@ twoDArr = []
 with open("map/alpha_map.csv", newline="") as file:
     twoDArr = np.array(list(csv.reader(file)))
 
-print(twoDArr)
+#print(twoDArr)
 pygame.init()
 screen = pygame.display.set_mode((1024, 720))
 sizeTouple = screen.get_rect(topleft=(0, 0))
@@ -57,7 +57,7 @@ def cut_piece_from_TwoD_Arr(coordTuple, map_data, renderedSize):
     ]
 
 
-visibleArr = cut_piece_from_TwoD_Arr(screen.get_rect().topleft, twoDArr, 20)
+visibleArr = cut_piece_from_TwoD_Arr(screen.get_rect().topleft, twoDArr, 16)
 
 
 bg_tiles_Group = pygame.sprite.Group()
@@ -75,12 +75,12 @@ def set_bg_tiles(x=0, y=0, tilesize=64):
         for element in rows:
             #screen.blit(ground.image, (rowNum, columnNum))
             bg_tiles_Group.add(
-                createSprite("water", "./images/water_64", (rowNum, columnNum), 64, 64)
+                createSprite("water", "./images/water_64", (rowNum, columnNum), tilesize, tilesize)
             )
             rowNum -= tilesize / 2  ### Move to the left
             columnNum += tilesize / 4  ### Move to the bottom
             print(row)
-            print(len(bg_tiles_Group))
+            #print(len(bg_tiles_Group))
 
         # add new line start coordinates
         rowNum = start_x + ((tilesize / 2) * row)
@@ -88,9 +88,23 @@ def set_bg_tiles(x=0, y=0, tilesize=64):
         column += 1
         row += 1
 
+# def quicker_set_bg_tiles(x=0,y=0,tilesize=64):
+#     bg_tiles_Group.empty()
+#     start_x = screen.get_rect().midtop[0] + x
+#     start_y = screen.get_rect().midtop[1] + y
+#     value_x = start_x
+#     value_y = start_y
+#     ##
+#     for index, element in np.ndenumerate(visibleArr):
+#         bg_tiles_Group.add(
+#                 createSprite("water", "./images/water_64", (value_x,value_y), tilesize, tilesize)
+#             )
+#         value_x -= (index[0] *(tilesize / 2) )
+#         value_y += (index[1] *(tilesize / 4) )
+#         print(index, element)
 
-set_bg_tiles()
-
+# quicker_set_bg_tiles()
+#set_bg_tiles()
 
 
 class playerTest():
@@ -101,99 +115,20 @@ class playerTest():
     
     def player_movement(self,event):
         if event.key == 119 or event.key == 1073741906:
-            self.movement_y -= 5
-            print("event type up",self.movement_y)
-        elif event.key == 100 or event.key == 1073741903:
-            self.movement_x += 5
-            print("event type right")
-        elif event.key == 115 or event.key == 1073741905:
             self.movement_y += 5
-            print("event type down")
-        elif event.key == 97 or event.key == 1073741904:
+            #print("event type up",self.movement_y)
+        elif event.key == 100 or event.key == 1073741903:
             self.movement_x -= 5
-            print("event type left")
+            #print("event type right")
+        elif event.key == 115 or event.key == 1073741905:
+            self.movement_y -= 5
+            #print("event type down")
+        elif event.key == 97 or event.key == 1073741904:
+            self.movement_x += 5
+            #print("event type left")
 
 newPlayer = playerTest()
 
-
-
-
-###
-# player = createSprite("player",
-#                       "demo/graphics/player",
-#                       (screen.get_size()[0] // 2,
-#                       screen.get_size()[1] // 2),32,32)
-
-#     keys = pygame.key.get_pressed()
-# def input(player):
-#     direction = pygame.math.Vector2
-#     direction.x, direction.y = 0,0
-
-#     down = keys[pygame.K_DOWN]
-#     up = keys[pygame.K_UP]
-#     left = keys[pygame.K_LEFT]
-#     right = keys[pygame.K_RIGHT]
-#     if up:
-
-#         direction.y = -1
-#     elif down:
-#         direction.y = 1
-#     elif not up and not down and speed > 0.1 and (left or right):
-#         direction.y = 0
-
-#     if right:
-#         direction.x = 1
-#     elif left:
-#         direction.x = -1
-#     elif not right and not left and speed > 0.1 and (up or down):
-#         direction.x = 0
-
-#     if not up and not down and not right and not left:
-#         speed /= 1.3
-#         if speed <= 0.1:
-#             direction.x = 0
-#             direction.y = 0
-
-
-# def input(event):
-#         keys = pygame.key.get_pressed()
-#         up = keys[pygame.K_UP]
-#         down = keys[pygame.K_DOWN]
-#         right = keys[pygame.K_RIGHT]
-#         left = keys[pygame.K_LEFT]
-
-#         if up:
-#             direction.y = -1
-#         elif down:
-#             direction.y = 1
-#         elif not up and not down and speed > 0.1 and (left or right):
-#             direction.y = 0
-
-#         if right:
-#             direction.x = 1
-#         elif left:
-#             direction.x = -1
-#         elif not right and not left and speed > 0.1 and (up or down):
-#             direction.x = 0
-
-#         if not up and not down and not right and not left:
-#             speed /= 1.3
-#             if speed <= 0.1:
-#                 direction.x = 0
-#                 direction.y = 0
-
-# def update:
-#         #input()
-
-#         speed += acceleration
-#         speed = min(speed, max_speed)
-
-#         if direction.x and not direction.y:
-#             rect.center += direction * speed
-#         elif direction.y and not direction.x:
-#             rect.center += direction * speed
-#         elif direction.y and direction.x:
-#             rect.center += (direction / 1.5) * speed
 
 """
 ARRR[1:4, 1:4]
@@ -219,13 +154,32 @@ while running:
                 else:
                     mesh_toggle = False
                     pygame.time.delay(100)
-            newPlayer.player_movement(event)
-            set_bg_tiles(newPlayer.movement_x, newPlayer.movement_y)
+            #newPlayer.player_movement(event)
+            #set_bg_tiles(newPlayer.movement_x, newPlayer.movement_y)
+           # print(bg_tiles_Group.get_rect().topleft)
         elif event.type == pygame.MOUSEBUTTONUP:
             mouseEvents(ui)
+    keys = pygame.key.get_pressed()
+    if keys[pygame.K_UP]:
+        newPlayer.player_movement(event)
+        quicker_set_bg_tiles()
+        #set_bg_tiles(newPlayer.movement_x, newPlayer.movement_y)
+    if keys[pygame.K_DOWN]:
+        newPlayer.player_movement(event)
+        quicker_set_bg_tiles()
+        #set_bg_tiles(newPlayer.movement_x, newPlayer.movement_y)
+    if keys[pygame.K_RIGHT]:
+        newPlayer.player_movement(event)
+        quicker_set_bg_tiles()
+        #set_bg_tiles(newPlayer.movement_x, newPlayer.movement_y)
+    if keys[pygame.K_LEFT]:
+        newPlayer.player_movement(event)
+        quicker_set_bg_tiles()
+        #set_bg_tiles(newPlayer.movement_x, newPlayer.movement_y)
+
 
     screen.fill((0, 0, 255))
     bg_tiles_Group.draw(screen)
     screen.blit(player.image, player.rect)
     pygame.display.update()
-    clock.tick(60)
+    clock.tick(30)
