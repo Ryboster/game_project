@@ -89,44 +89,52 @@ def set_bg_tiles(x=0, y=0, tilesize=64):
         row += 1
 
 def quicker_set_bg_tiles(x=0,y=0,tilesize=128):
-    bg_tiles_Group.empty()
     start_x = screen.get_rect().midtop[0] + x
     start_y = screen.get_rect().midtop[1] + y
     value_x = start_x
     value_y = start_y
 
     for index, element in np.ndenumerate(visibleArr):
+        #x coordinate equals starting point minus half of tile width 
+        #and the half of the width is multipled
+        #by the column number counting from 0
+        #to adjust next lines half of tile width is added to x coordinate, multiplied by row number couting from 0
         value_x = start_x - (tilesize // 2) - (index[0] * (tilesize // 2)) + (index[1] * (tilesize // 2))
         value_y = start_y + (tilesize // 4) + (index[0] * (tilesize // 4)) + (index[1] * (tilesize // 4))
         screen.blit(ground.image, (value_x,value_y))
 
 quicker_set_bg_tiles()
 
-class playerTest():
+class plyer_movement():
     def __init__(self):
         super().__init__()
-        self.movement_x = 0
-        self.movement_y = 0
+        self.coordinates_x = 0
+        self.coordinates_y = 0
     
     def player_movement(self,keys):
         if keys[pygame.K_UP]:
-            self.movement_y += 5
+            self.coordinates_y += 5
         elif keys[pygame.K_DOWN]:
-            self.movement_y -= 5
+            self.coordinates_y -= 5
         elif keys[pygame.K_RIGHT]:
-            self.movement_x -= 5
+            self.coordinates_x -= 5
         elif keys[pygame.K_LEFT]:
-            self.movement_x += 5
+            self.coordinates_x += 5
 
 
-newPlayer = playerTest()
+newPlayer = plyer_movement()
 ui = UserInterface(screen)
 clock = pygame.time.Clock()
 
-running = True
+#while(1) imprive speed by couple miliseconds coparing with true
+running = 1
 mesh_toggle = False
 
 while running:
+    pygame.event.set_allowed(None)
+        
+    pygame.event.set_allowed([pygame.QUIT, pygame.KEYDOWN, pygame.KEYUP])
+
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             pygame.quit()
@@ -145,8 +153,8 @@ while running:
     newPlayer.player_movement(keys)
 
     screen.fill((0, 0, 255))
-    print(newPlayer.movement_x, newPlayer.movement_y)
-    quicker_set_bg_tiles(newPlayer.movement_x, newPlayer.movement_y)
+    print(newPlayer.coordinates_x, newPlayer.coordinates_y)
+    quicker_set_bg_tiles(newPlayer.coordinates_x, newPlayer.coordinates_y)
     bg_tiles_Group.draw(screen)
     screen.blit(player.image, player.rect)
     pygame.display.update()
