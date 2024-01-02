@@ -2,12 +2,13 @@
 import pygame, sys
 import csv
 import numpy as np
+import math
 from character_class.main_character import Player as player
 from ui.user_interface import UserInterface
 from effects.effects_class import mouseEvents
 
 twoDArr = []
-with open("map/alpha_map.csv", newline="") as file:
+with open("map/map_test.csv", newline="") as file:
     twoDArr = np.array(list(csv.reader(file)), dtype=str)
 
 #print(twoDArr)
@@ -57,7 +58,7 @@ def cut_piece_from_TwoD_Arr(coordTuple, map_data, renderedSize):
     ]
 
 
-visibleArr = cut_piece_from_TwoD_Arr(screen.get_rect().topleft, twoDArr, 25)
+visibleArr = cut_piece_from_TwoD_Arr(screen.get_rect().topleft, twoDArr, 10)
 
 
 bg_tiles_Group = pygame.sprite.Group()
@@ -87,6 +88,11 @@ def set_bg_tiles(x=0, y=0, tilesize=64):
         columnNum = start_y + ((tilesize / 4) * column)
         column += 1
         row += 1
+def blit_tile_relying_on_letter(letter,x,y):
+    if letter == 'L':
+        return screen.blit(ground.image, (x,y))
+    else:
+        return screen.blit(water.image, (x,y))
 
 def quicker_set_bg_tiles(x=0,y=0,tilesize=128):
     start_x = screen.get_rect().midtop[0] + x
@@ -101,7 +107,8 @@ def quicker_set_bg_tiles(x=0,y=0,tilesize=128):
         #to adjust next lines half of tile width is added to x coordinate, multiplied by row number couting from 0
         value_x = start_x - (tilesize // 2) - (index[0] * (tilesize // 2)) + (index[1] * (tilesize // 2))
         value_y = start_y + (tilesize // 4) + (index[0] * (tilesize // 4)) + (index[1] * (tilesize // 4))
-        screen.blit(ground.image, (value_x,value_y))
+        blit_tile_relying_on_letter(element,value_x, value_y)
+        #screen.blit(ground.image, (value_x,value_y))
 
 quicker_set_bg_tiles()
 
@@ -130,9 +137,15 @@ clock = pygame.time.Clock()
 running = 1
 mesh_toggle = False
 
+def count_the_x_position(x,y):
+    const = math.sqrt(64*64+32*32)
+    if y < 0:
+        y *= -1
+    return (math.sqrt((x*x) + (y*y)) / const)
+
 while running:
+    #this should limit allowed events to read  
     pygame.event.set_allowed(None)
-        
     pygame.event.set_allowed([pygame.QUIT, pygame.KEYDOWN, pygame.KEYUP])
 
     for event in pygame.event.get():
@@ -153,8 +166,12 @@ while running:
     newPlayer.player_movement(keys)
 
     screen.fill((0, 0, 255))
-    print(newPlayer.coordinates_x, newPlayer.coordinates_y)
-    quicker_set_bg_tiles(newPlayer.coordinates_x, newPlayer.coordinates_y)
+    #(screen.get_size()[1] // 2))*-1)
+    #print("x and y coord",((newPlayer.coordinates_x )// 64), (((newPlayer.coordinates_y//2) //32)))
+    xtest=(newPlayer.coordinates_x)
+    ytest=(newPlayer.coordinates_y)-(screen.get_size()[1] // 2)
+    print("x and y coord",xtest,ytest,count_the_x_position(xtest,ytest))
+    quicker_set_bg_tiles(newPlayer.coordinates_x, (newPlayer.coordinates_y))
     bg_tiles_Group.draw(screen)
     screen.blit(player.image, player.rect)
     pygame.display.update()
