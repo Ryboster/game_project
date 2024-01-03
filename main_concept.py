@@ -8,7 +8,7 @@ from ui.user_interface import UserInterface
 from effects.effects_class import mouseEvents
 
 twoDArr = []
-with open("map/map_test.csv", newline="") as file:
+with open("map/alpha_map.csv", newline="") as file:
     twoDArr = np.array(list(csv.reader(file)), dtype=str)
 
 #print(twoDArr)
@@ -58,7 +58,7 @@ def cut_piece_from_TwoD_Arr(coordTuple, map_data, renderedSize):
     ]
 
 
-visibleArr = cut_piece_from_TwoD_Arr(screen.get_rect().topleft, twoDArr, 10)
+visibleArr = cut_piece_from_TwoD_Arr(screen.get_rect().topleft, twoDArr, 30)
 
 
 bg_tiles_Group = pygame.sprite.Group()
@@ -136,13 +136,12 @@ clock = pygame.time.Clock()
 #while(1) imprive speed by couple miliseconds coparing with true
 running = 1
 mesh_toggle = False
-
-def count_the_x_position(x,y):
-    const = math.sqrt(64*64+32*32)
-    if y < 0:
-        y *= -1
-    return (math.sqrt((x*x) + (y*y)) / const)
-
+def create_isometric_coordinates(cartesian_x, cartesian_y):
+    xtest= cartesian_x * -1
+    ytest=(cartesian_y-(screen.get_size()[1] // 2)) * -1
+    coordx=  (2*ytest+xtest)//(ground.image.get_rect().width )
+    coordy= (2*ytest-xtest)//(ground.image.get_rect().width )
+    return (coordx,coordy)
 while running:
     #this should limit allowed events to read  
     pygame.event.set_allowed(None)
@@ -166,12 +165,11 @@ while running:
     newPlayer.player_movement(keys)
 
     screen.fill((0, 0, 255))
-    #(screen.get_size()[1] // 2))*-1)
-    #print("x and y coord",((newPlayer.coordinates_x )// 64), (((newPlayer.coordinates_y//2) //32)))
-    xtest=(newPlayer.coordinates_x)
-    ytest=(newPlayer.coordinates_y)-(screen.get_size()[1] // 2)
-    print("x and y coord",xtest,ytest,count_the_x_position(xtest,ytest))
+    
+    print("x and y coord",create_isometric_coordinates(newPlayer.coordinates_x,newPlayer.coordinates_y))
+
     quicker_set_bg_tiles(newPlayer.coordinates_x, (newPlayer.coordinates_y))
+
     bg_tiles_Group.draw(screen)
     screen.blit(player.image, player.rect)
     pygame.display.update()
