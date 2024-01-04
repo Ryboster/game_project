@@ -42,33 +42,41 @@ player = createSprite(
 
 ### Replaced function. It now takes isometric coordinates instead of game coordinates.
 def cut_piece_from_TwoD_Arr(coords, map_data, size):
-    player_x = coords[0]
-    player_y = coords[1]
-    
-    if player_x > 0:
-        current_row = player_x - (size // 2)
+    coords_x = coords[0]
+    coords_y = coords[1]
+    start_row = 0
+    start_column= 0
+    end_row= coords[0]+(size // 2)
+    end_column= coords[1]+(size // 2)
+    # if visible area for the left side of the player do not fall behind array length
+    # set start row half the lenght of the visible size from the player
+    # otherwise set start row to 0
+    if coords_x - (size // 2) >= 0:      
+        start_row = coords_x - (size // 2)
     else:
-        current_row = 0
+        start_row = 1
         
-    if player_y > 0:
-        current_col = player_y - (size // 2)
+    if coords_y - (size // 2) >= 0:
+        start_column = coords_y - (size // 2)
     else:
-        current_col = 0
-     
+       start_column = 1
+    #arr = np.array([[1, 2, 3, 4, 5], [6, 7, 8, 9, 10]])
+    testarr = np.array([[ 0,  1,  2,  3],[ 4  ,5,  6,  7],[ 8,  9, 10, 11],[12, 13, 14, 15],[16, 17 ,18, 19],[20, 21, 22, 23]])
     '''debugging prints:'''    
-    #print('Slicing at: ', current_row, player_x + (size // 2), '\n', current_col, player_y + (size//2))
-    #print(map_data[
-    #    current_row: current_row + (size // 2),
-    #    current_col: current_col + (size // 2),
-    #])
-    return map_data[
-        current_row: player_x + (size // 2),
-        current_col: player_y + (size // 2),
-    ]
-    
+    print(start_row,start_column,end_row,end_column,coords)
+    print(map_data[start_row:end_row, end_row:end_column])
+    # print(map_data[
+    #     start_row: start_column,
+    #     end_row: end_column,
+    # ])
+    # return map_data[
+    #     start_row: start_column,
+    #     end_row: end_column,
+    # ]
+    return map_data[start_row:end_row, 1:8]
 
 
-visibleArr = cut_piece_from_TwoD_Arr((0,0), twoDArr, 3)
+visibleArr = cut_piece_from_TwoD_Arr((0,0), twoDArr, 5)
 
 
 def blit_tile_relying_on_letter(letter,x,y):
@@ -93,9 +101,8 @@ def quicker_set_bg_tiles(x=0,y=0,tilesize=128):
         #to adjust next lines half of tile width is added to x coordinate, multiplied by row number couting from 0
         value_x = start_x - (tilesize // 2) - (index[0] * (tilesize // 2)) + (index[1] * (tilesize // 2))
         value_y = start_y + (tilesize // 4) + (index[0] * (tilesize // 4)) + (index[1] * (tilesize // 4))
-        print('blitting at: ', value_x, value_y)
+        #print('blitting at: ', value_x, value_y)
         blit_tile_relying_on_letter(element,value_x, value_y)
-        #screen.blit(ground.image, (value_x,value_y))
 
 quicker_set_bg_tiles()
 
@@ -139,7 +146,8 @@ while running:
     
     if current_player_pos != create_isometric_coordinates(newPlayer.coordinates_x,newPlayer.coordinates_y):
         current_player_pos = create_isometric_coordinates(newPlayer.coordinates_x,newPlayer.coordinates_y)
-        visibleArr = cut_piece_from_TwoD_Arr(current_player_pos, twoDArr, 10)
+        visibleArr = cut_piece_from_TwoD_Arr(current_player_pos, twoDArr, 6)
+
     
     #this should limit allowed events to read  
     pygame.event.set_allowed(None)
