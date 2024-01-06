@@ -115,16 +115,20 @@ class plyer_movement():
         self.coordinates_x = 0
         self.coordinates_y = 0
         self.isometric_position_x = 0
-        self.isometric_position_y = 0
+        self.isometric_position_y = 50
     def player_movement(self,keys):
         if keys[pygame.K_UP]:
-            self.coordinates_y += 5
+            self.coordinates_y += 4
+            self.isometric_position_y +=4
         elif keys[pygame.K_DOWN]:
-            self.coordinates_y -= 5
+            self.coordinates_y -= 4
+            self.isometric_position_y -= 4
         elif keys[pygame.K_RIGHT]:
-            self.coordinates_x += 5
+            self.coordinates_x += 4
+            self.isometric_position_x -= 4
         elif keys[pygame.K_LEFT]:
-            self.coordinates_x -= 5
+            self.coordinates_x -= 4
+            self.isometric_position_x += 4
 
 
 newPlayer = plyer_movement()
@@ -150,15 +154,6 @@ current_player_pos = (0,0)
 
 while running:
     
-    if current_player_pos != create_isometric_coordinates(newPlayer.coordinates_x,newPlayer.coordinates_y):
-        current_player_pos = create_isometric_coordinates(newPlayer.coordinates_x,newPlayer.coordinates_y)
-        visibleArr = cut_piece_from_TwoD_Arr(current_player_pos, twoDArr, 6)
-        #newPlayer.coordinates_x = screen.get_size()[1] // 2
-        #newPlayer.coordinates_y = screen.get_size()[0] // 2
-        restartx= 0
-        print(restartx,restarty)
-        #restarty =  (newPlayer.coordinates_y+ screen.get_size()[1] // 2)
-    #this should limit allowed events to read  
     pygame.event.set_allowed(None)
     pygame.event.set_allowed([pygame.QUIT, pygame.KEYDOWN, pygame.KEYUP])
 
@@ -183,8 +178,21 @@ while running:
     
     #print("x and y coord",create_isometric_coordinates(newPlayer.coordinates_x,newPlayer.coordinates_y))
 
-    quicker_set_bg_tiles(restartx,restarty)
 
+
+    if current_player_pos != create_isometric_coordinates(newPlayer.coordinates_x,newPlayer.coordinates_y):
+        current_player_pos = create_isometric_coordinates(newPlayer.coordinates_x,newPlayer.coordinates_y)
+        visibleArr = cut_piece_from_TwoD_Arr(current_player_pos, twoDArr, 6)
+        #newPlayer.coordinates_x = screen.get_size()[1] // 2
+        #newPlayer.coordinates_y = screen.get_size()[0] // 2
+        newPlayer.isometric_position_x= 64 -4
+        newPlayer.isometric_position_y =32 +4
+        print(restartx,restarty)
+        #restarty =  (newPlayer.coordinates_y+ screen.get_size()[1] // 2)
+    #this should limit allowed events to read  
+    else:
+        quicker_set_bg_tiles(newPlayer.isometric_position_x,newPlayer.isometric_position_y)
+        print(newPlayer.isometric_position_x)
     screen.blit(player.image, player.rect)
     pygame.display.update()
     clock.tick(60)
