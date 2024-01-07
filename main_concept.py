@@ -7,15 +7,74 @@ from character_class.main_character import Player as player
 from ui.user_interface import UserInterface
 from effects.effects_class import mouseEvents
 
+pygame.init()
+screen = pygame.display.set_mode((1024, 720))
+sizeTouple = screen.get_rect(topleft=(0, 0))
+
+class CameraGroup():
+    def __init__(self):
+        #super().__init__()
+        # Get display surface
+        self.display_surf = pygame.display.get_surface()
+
+
+        # Camera offset
+        self.offset = pygame.math.Vector2()
+        self.half_W = self.display_surf.get_size()[0] // 2
+        self.half_y = self.display_surf.get_size()[1] // 2
+        self.screen_size = self.display_surf.get_size()
+
+        # Camera Rect
+        self.camera_rect = pygame.Rect(self.offset.x, self.offset.y, self.screen_size[0], self.screen_size[1])
+        
+
+    def center_target(self, target):
+        self.offset.x = target.rect.centerx - self.half_W
+        self.offset.y = target.rect.centery - self.half_y
+
+        self.camera_rect.centerx = target.rect.centerx - self.offset.x
+        self.camera_rect.centery = target.rect.centery - self.offset.y
+        self.camera_rect.center = target.rect.center
+
+    def quicker_set_bg_tiles(self, x=0,y=0,tilesize=128):
+        start_x = (screen.get_size()[0] // 2)-64 + x
+        #screen.get_rect().midtop[0] + x
+        start_y = -64 + y
+        #screen.get_rect().midtop[1] + y
+        value_x = start_x
+        value_y = start_y
+
+        for index, element in np.ndenumerate(visibleArr):
+            #x coordinate equals starting point minus half of tile width 
+            #and the half of the width is multipled
+            #by the column number counting from 0
+            #to adjust next lines half of tile width is added to x coordinate, multiplied by row number couting from 0
+            value_x = start_x - (tilesize // 2) - (index[0] * (tilesize // 2)) + (index[1] * (tilesize // 2))
+            value_y = start_y + (tilesize // 4) + (index[0] * (tilesize // 4)) + (index[1] * (tilesize // 4))
+            #print('blitting at: ', value_x, value_y)
+            
+
+
+            blit_tile_relying_on_letter(element,value_x, value_y,index)
+
+        
+    def display_on_screen(self, player):
+        
+        # Center player
+        self.center_target(player)
+             
+        self.display_surf.blit(player.image, player.rect.topleft - self.offset)
+
+
+
+camera = CameraGroup()
 
 
 twoDArr = []
 with open("map/alpha_map.csv", newline="") as file:
     twoDArr = np.array(list(csv.reader(file)), dtype=str)
 
-pygame.init()
-screen = pygame.display.set_mode((1024, 720))
-sizeTouple = screen.get_rect(topleft=(0, 0))
+
 
 
 def createSprite(name, fileName, position, width=0, height=0):
@@ -31,6 +90,8 @@ def createSprite(name, fileName, position, width=0, height=0):
 
 water = createSprite("water", "./images/water_tile", (0, 0),128,128)
 ground = createSprite("ground", "./images/ground_tile", (0, 0), 128, 128)
+
+
 player = createSprite(
     "player",
     "./images/player",
@@ -66,7 +127,7 @@ def cut_piece_from_TwoD_Arr(coords, map_data, size):
     #arr = np.array([[1, 2, 3, 4, 5], [6, 7, 8, 9, 10]])
     #testarr = np.array([[ 0,  1,  2,  3],[ 4  ,5,  6,  7],[ 8,  9, 10, 11],[12, 13, 14, 15],[16, 17 ,18, 19],[20, 21, 22, 23]])
     '''debugging prints:'''    
-    print(start_row,start_column,end_row,end_column,coords,size)
+    print(coords,size)
     print(map_data[start_row:start_column, end_row:end_column])
     # print(map_data[
     #     start_row: start_column,
@@ -79,35 +140,27 @@ def cut_piece_from_TwoD_Arr(coords, map_data, size):
     return map_data[start_row:start_column, end_row:end_column]
 
 
-visibleArr = cut_piece_from_TwoD_Arr((0,0), twoDArr, 5)
+visibleArr = cut_piece_from_TwoD_Arr((0,0), twoDArr, 6)
 
 
-def blit_tile_relying_on_letter(letter,x,y):
+def blit_tile_relying_on_letter(letter,x,y, index):
+    font = pygame.font.Font("./fonts/Arial_Bold.ttf", 16)
+    text = font.render(f"{(index[0], index[1])}", True, 'black')
+    textRect = text.get_rect()
+
     if letter == 'L':
-        return screen.blit(ground.image, (x,y))
+        screen.blit(ground.image, (x,y))
     else:
-        return screen.blit(water.image, (x,y))
+        screen.blit(water.image, (x,y))
 
+    screen.blit(text, (x,y))
+    return
 
 
 # Broken at the moment - Wrong coordinates - Things are being blitted outside of visible area.
-def quicker_set_bg_tiles(x=0,y=0,tilesize=128):
-    start_x = screen.get_rect().midtop[0] + x
-    start_y = screen.get_rect().midtop[1] + y
-    value_x = start_x
-    value_y = start_y
 
-    for index, element in np.ndenumerate(visibleArr):
-        #x coordinate equals starting point minus half of tile width 
-        #and the half of the width is multipled
-        #by the column number counting from 0
-        #to adjust next lines half of tile width is added to x coordinate, multiplied by row number couting from 0
-        value_x = start_x - (tilesize // 2) - (index[0] * (tilesize // 2)) + (index[1] * (tilesize // 2))
-        value_y = start_y + (tilesize // 4) + (index[0] * (tilesize // 4)) + (index[1] * (tilesize // 4))
-        #print('blitting at: ', value_x, value_y)
-        blit_tile_relying_on_letter(element,value_x, value_y)
 
-quicker_set_bg_tiles()
+#quicker_set_bg_tiles()
 
 class plyer_movement():
     def __init__(self):
@@ -115,7 +168,7 @@ class plyer_movement():
         self.coordinates_x = 0
         self.coordinates_y = 0
         self.isometric_position_x = 0
-        self.isometric_position_y = 50
+        self.isometric_position_y = 0
     def player_movement(self,keys):
         if keys[pygame.K_UP]:
             self.coordinates_y += 4
@@ -145,12 +198,7 @@ def create_isometric_coordinates(cartesian_x, cartesian_y):
     coordy= (2*ytest-xtest)//(ground.image.get_rect().width )
     return (coordx,coordy)
 
-restartx= 0
-#screen.get_size()[0] 
-restarty =  50
-#screen.get_size()[1] //4
 current_player_pos = (0,0)
-
 
 while running:
     
@@ -173,26 +221,22 @@ while running:
             mouseEvents(ui)
     keys = pygame.key.get_pressed()
     newPlayer.player_movement(keys)
-
     screen.fill((0, 0, 255))
-    
-    #print("x and y coord",create_isometric_coordinates(newPlayer.coordinates_x,newPlayer.coordinates_y))
-
-
 
     if current_player_pos != create_isometric_coordinates(newPlayer.coordinates_x,newPlayer.coordinates_y):
         current_player_pos = create_isometric_coordinates(newPlayer.coordinates_x,newPlayer.coordinates_y)
-        visibleArr = cut_piece_from_TwoD_Arr(current_player_pos, twoDArr, 6)
+        visibleArr = cut_piece_from_TwoD_Arr(current_player_pos, twoDArr, 12)
         #newPlayer.coordinates_x = screen.get_size()[1] // 2
         #newPlayer.coordinates_y = screen.get_size()[0] // 2
         newPlayer.isometric_position_x= 64 -4
         newPlayer.isometric_position_y =32 +4
-        print(restartx,restarty)
         #restarty =  (newPlayer.coordinates_y+ screen.get_size()[1] // 2)
-    #this should limit allowed events to read  
-    else:
-        quicker_set_bg_tiles(newPlayer.isometric_position_x,newPlayer.isometric_position_y)
-        print(newPlayer.isometric_position_x)
-    screen.blit(player.image, player.rect)
+    # #this should limit allowed events to read  
+    # else:
+    print('player iso',newPlayer.isometric_position_x, newPlayer.isometric_position_y)
+    camera.quicker_set_bg_tiles(newPlayer.isometric_position_x,newPlayer.isometric_position_y)
+
+    camera.display_on_screen(player)
+    #screen.blit(player.image, player.rect)
     pygame.display.update()
     clock.tick(60)
