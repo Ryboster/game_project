@@ -11,6 +11,22 @@ pygame.init()
 screen = pygame.display.set_mode((1024, 720))
 sizeTouple = screen.get_rect(topleft=(0, 0))
 
+TILE_SIZE=(256, 256)
+TRIMMED_MAP_SIZE = 10
+
+def display_fps(clock):
+    font = pygame.font.Font("./fonts/Arial_Bold.ttf", 16)
+    text_surf = font.render(f"{clock.get_fps()}",True, 'Yellow')
+    screen.blit(text_surf, (100,100))
+
+def set_map_y_cooridnates_to_center_player_on_map(playerPos,tileSize,visibleArray):
+    return  (playerPos - ((tileSize//2) * (visibleArray/2))) - (tileSize//2)
+
+def set_map_x_cooridnates_to_center_player_on_map(playerPos,tileSize,visibleArray):
+    return  playerPos - (tileSize//4)
+
+
+
 class CameraGroup():
     def __init__(self):
         #super().__init__()
@@ -36,10 +52,10 @@ class CameraGroup():
         self.camera_rect.centery = target.rect.centery - self.offset.y
         self.camera_rect.center = target.rect.center
 
-    def quicker_set_bg_tiles(self, x=0,y=0,tilesize=128):
-        start_x = (screen.get_size()[0] // 2)-64 + x
+    def quicker_set_bg_tiles(self, x=0,y=0,tilesize=TILE_SIZE[0]):
+        start_x = set_map_x_cooridnates_to_center_player_on_map((screen.get_size()[0] // 2),TILE_SIZE[0],TRIMMED_MAP_SIZE) + x
         #screen.get_rect().midtop[0] + x
-        start_y = -64 + y
+        start_y = set_map_y_cooridnates_to_center_player_on_map((screen.get_size()[1] // 2),TILE_SIZE[0],TRIMMED_MAP_SIZE) + y
         #screen.get_rect().midtop[1] + y
         value_x = start_x
         value_y = start_y
@@ -66,7 +82,6 @@ class CameraGroup():
         self.display_surf.blit(player.image, player.rect.topleft - self.offset)
 
 
-
 camera = CameraGroup()
 
 
@@ -88,8 +103,8 @@ def createSprite(name, fileName, position, width=0, height=0):
     return name
 
 
-water = createSprite("water", "./images/water_tile", (0, 0),128,128)
-ground = createSprite("ground", "./images/ground_tile", (0, 0), 128, 128)
+water = createSprite("water", "./images/water_tile", (0, 0),TILE_SIZE[0],TILE_SIZE[1])
+ground = createSprite("ground", "./images/ground_tile", (0, 0), TILE_SIZE[0], TILE_SIZE[1])
 
 
 player = createSprite(
@@ -109,58 +124,22 @@ def cut_piece_from_TwoD_Arr(coords, map_data, size):
     end_row= coords_y
     start_column=  coords_x +size 
     end_column= coords_y+ size 
-    # # if visible area for the left side of the player do not fall behind array length
-    # # set start row half the lenght of the visible size from the player
-    # # otherwise set start row to 0
-    # if coords_x - (size // 2) >= 0:      
-    #     start_row = coords_x - size 
-    # else:
-    #     start_row = 1
-    #     start_column =size
-        
-    # if coords_y - (size // 2) >= 0:
-    #     start_column = coords_y - (size // 2)
-    # else:
-    #    end_row = 0
-    #    #start_column = 0
-    #    end_column = size
-    #arr = np.array([[1, 2, 3, 4, 5], [6, 7, 8, 9, 10]])
-    #testarr = np.array([[ 0,  1,  2,  3],[ 4  ,5,  6,  7],[ 8,  9, 10, 11],[12, 13, 14, 15],[16, 17 ,18, 19],[20, 21, 22, 23]])
     '''debugging prints:'''    
-    print(coords,size)
-    print(map_data[start_row:start_column, end_row:end_column])
-    # print(map_data[
-    #     start_row: start_column,
-    #     end_row: end_column,
-    # ])
-    # return map_data[
-    #     start_row: start_column,
-    #     end_row: end_column,
-    # ]
+    #print(coords,size)
+    #print(map_data[start_row:start_column, end_row:end_column])
     return map_data[start_row:start_column, end_row:end_column]
 
 
-visibleArr = cut_piece_from_TwoD_Arr((0,0), twoDArr, 6)
+visibleArr = cut_piece_from_TwoD_Arr((0,0), twoDArr, TRIMMED_MAP_SIZE)
 
 
 def blit_tile_relying_on_letter(letter,x,y, index):
-    font = pygame.font.Font("./fonts/Arial_Bold.ttf", 16)
-    text = font.render(f"{(index[0], index[1])}", True, 'black')
-    textRect = text.get_rect()
-
     if letter == 'L':
         screen.blit(ground.image, (x,y))
     else:
         screen.blit(water.image, (x,y))
-
-    screen.blit(text, (x,y))
     return
 
-
-# Broken at the moment - Wrong coordinates - Things are being blitted outside of visible area.
-
-
-#quicker_set_bg_tiles()
 
 class plyer_movement():
     def __init__(self):
@@ -225,7 +204,7 @@ while running:
 
     if current_player_pos != create_isometric_coordinates(newPlayer.coordinates_x,newPlayer.coordinates_y):
         current_player_pos = create_isometric_coordinates(newPlayer.coordinates_x,newPlayer.coordinates_y)
-        visibleArr = cut_piece_from_TwoD_Arr(current_player_pos, twoDArr, 12)
+        visibleArr = cut_piece_from_TwoD_Arr(current_player_pos, twoDArr, TRIMMED_MAP_SIZE)
         #newPlayer.coordinates_x = screen.get_size()[1] // 2
         #newPlayer.coordinates_y = screen.get_size()[0] // 2
         newPlayer.isometric_position_x= 64 -4
@@ -233,10 +212,11 @@ while running:
         #restarty =  (newPlayer.coordinates_y+ screen.get_size()[1] // 2)
     # #this should limit allowed events to read  
     # else:
-    print('player iso',newPlayer.isometric_position_x, newPlayer.isometric_position_y)
+    #print('player iso',newPlayer.isometric_position_x, newPlayer.isometric_position_y)
     camera.quicker_set_bg_tiles(newPlayer.isometric_position_x,newPlayer.isometric_position_y)
-
+    print(set_map_x_cooridnates_to_center_player_on_map((screen.get_size()[0] // 2),TILE_SIZE[0],TRIMMED_MAP_SIZE),set_map_y_cooridnates_to_center_player_on_map((screen.get_size()[1] // 2),TILE_SIZE[0],TRIMMED_MAP_SIZE))
     camera.display_on_screen(player)
     #screen.blit(player.image, player.rect)
+    display_fps(clock)
     pygame.display.update()
     clock.tick(60)
